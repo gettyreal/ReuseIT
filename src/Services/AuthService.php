@@ -10,12 +10,14 @@ use Exception;
  * 
  * Encapsulates core authentication business logic.
  * Handles registration, login, logout, and user retrieval with password hashing and session management.
+ * Integrates rate limiting to prevent brute-force attacks.
  */
 class AuthService {
     
     private UserRepository $userRepo;
     private GeolocationService $geoService;
     private SessionHandler $session;
+    private RateLimitService $rateLimiter;
     
     /**
      * Initialize AuthService with dependencies.
@@ -23,11 +25,13 @@ class AuthService {
      * @param UserRepository $userRepo User data access layer
      * @param GeolocationService $geoService Address geocoding service
      * @param SessionHandler $session Session management
+     * @param RateLimitService $rateLimiter Rate limiting service
      */
-    public function __construct(UserRepository $userRepo, GeolocationService $geoService, SessionHandler $session) {
+    public function __construct(UserRepository $userRepo, GeolocationService $geoService, SessionHandler $session, RateLimitService $rateLimiter) {
         $this->userRepo = $userRepo;
         $this->geoService = $geoService;
         $this->session = $session;
+        $this->rateLimiter = $rateLimiter;
     }
     
     /**
@@ -95,19 +99,35 @@ class AuthService {
     /**
      * Authenticate user with email and password.
      * 
+     * Enforces rate limiting before checking credentials to prevent brute-force attacks.
+     * 
      * @param string $email User email address
      * @param string $password User password (plain text)
      * @return array Array with user_id and session_id
-     * @throws Exception On authentication failure
+     * @throws Exception On authentication failure or rate limit lockout
      */
     public function login(string $email, string $password): array {
+        // Get client IP address
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        
+        // Check if account is locked due to too many failed attempts
+        // This check happens BEFORE credential validation to prevent enumeration attacks
+        if ($this->rateLimiter->isLocked($email, $ipAddress)) {
+            throw new Exception(RateLimitService::getLockoutMessage());
+        }
+        
         // Find user by email
         $user = $this->userRepo->findByEmail($email);
         
         // User not found or password incorrect - return generic error to prevent email enumeration
         if (!$user || !password_verify($password, $user['password_hash'])) {
+            // Record the failed attempt for rate limiting
+            $this->rateLimiter->recordFailedAttempt($email, $ipAddress);
             throw new Exception('Invalid credentials');
         }
+        
+        // Password is correct - clear failed attempts counter
+        $this->rateLimiter->clearAttempts($email, $ipAddress);
         
         // Create session (regenerates session ID for security)
         $this->session->login($user['id']);
