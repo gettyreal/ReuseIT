@@ -36,9 +36,6 @@ yarn.lock
 .DS_Store
 Thumbs.db
 
-# Planning folder
-.planning/
-
 # Logs
 logs/
 *.log
