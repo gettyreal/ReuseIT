@@ -80,11 +80,11 @@
 
 ### API Infrastructure
 
-- [ ] **API-01**: All frontend-backend communication uses JSON REST API
-- [ ] **API-02**: API returns consistent response format (success/error with data/message)
+- [x] **API-01**: All frontend-backend communication uses JSON REST API
+- [x] **API-02**: API returns consistent response format (success/error with data/message)
 - [ ] **API-03**: API enforces authentication for protected endpoints
-- [ ] **API-04**: API validates all inputs before processing
-- [ ] **API-05**: API handles errors gracefully with descriptive messages
+- [x] **API-04**: API validates all inputs before processing
+- [x] **API-05**: API handles errors gracefully with descriptive messages
 
 ## v2 Requirements
 

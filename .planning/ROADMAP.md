@@ -13,6 +13,7 @@ This roadmap breaks down the development of ReuseIT into 8 phases, each with out
 
 **Philosophy:** Each phase builds on the previous phase's architectural patterns. Phases 1-3 establish the technical foundation and listing infrastructure. Phases 4-7 add transactional flows (discovery, communication, booking, reputation). Phase 8 polishes the experience and enables moderation.
 
+
 ---
 
 ## Phase 1: Foundation (Weeks 1-2)
