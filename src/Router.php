@@ -44,6 +44,8 @@ class Router {
         $this->routes['POST']['/api/auth/register'] = ['AuthController', 'register'];
         $this->routes['POST']['/api/auth/login'] = ['AuthController', 'login'];
         $this->routes['POST']['/api/auth/logout'] = ['AuthController', 'logout'];
+        $this->routes['GET']['/api/users/:id'] = ['UserController', 'show'];
+        $this->routes['PATCH']['/api/users/:id/profile'] = ['UserController', 'update'];
         
         // Health check (Phase 1)
         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
