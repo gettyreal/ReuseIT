@@ -34,6 +34,26 @@ try {
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
     ]);
     
+    // Create geocoding_cache table if it doesn't exist
+    $createCacheTable = <<<SQL
+    CREATE TABLE IF NOT EXISTS geocoding_cache (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        address_hash VARCHAR(32) UNIQUE NOT NULL,
+        address_string VARCHAR(500) NOT NULL,
+        latitude DECIMAL(10,7) NOT NULL,
+        longitude DECIMAL(10,7) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_address_hash (address_hash)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    SQL;
+    
+    try {
+        $pdo->exec($createCacheTable);
+    } catch (PDOException $e) {
+        // Table might already exist - log but don't fail
+        error_log("Geocoding cache table creation: " . $e->getMessage());
+    }
+    
     return $pdo;
     
 } catch (PDOException $e) {
