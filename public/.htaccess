@@ -1,13 +1,16 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /public/
+    RewriteBase /
     
     # Skip rewriting for actual files and directories
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     
-    # Rewrite all requests to index.php
-    RewriteRule ^(.*)$ index.php?uri=/$1 [QSA,L]
+    # Rewrite all /api/* requests to api.php with uri parameter
+    RewriteRule ^api/(.*)$ api.php?uri=/api/$1 [QSA,L]
+    
+    # Also handle root requests
+    RewriteRule ^$ api.php?uri=/ [QSA,L]
 </IfModule>
 
 # Prevent directory listing
