@@ -27,7 +27,8 @@ CREATE TABLE users (
   
   INDEX idx_email (email),
   INDEX idx_created_at (created_at),
-  INDEX idx_coordinates (latitude, longitude)
+  INDEX idx_coordinates (latitude, longitude),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA CATEGORIE ====================
@@ -71,7 +72,8 @@ CREATE TABLE listings (
   INDEX idx_created_at (created_at),
   INDEX idx_category_id (category_id),
   INDEX idx_coordinates (latitude, longitude),
-  INDEX idx_seller_status (seller_id, status)
+  INDEX idx_seller_status (seller_id, status),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA FOTO ANNUNCI ====================
@@ -81,10 +83,12 @@ CREATE TABLE listing_photos (
   photo_url VARCHAR(500) NOT NULL,
   display_order INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
   
-  INDEX idx_listing_id (listing_id)
+  INDEX idx_listing_id (listing_id),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA PRENOTAZIONI ====================
@@ -99,6 +103,7 @@ CREATE TABLE bookings (
   completed_at TIMESTAMP NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
   FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -107,7 +112,8 @@ CREATE TABLE bookings (
   INDEX idx_buyer_id (buyer_id),
   INDEX idx_seller_id (seller_id),
   INDEX idx_booking_status (booking_status),
-  INDEX idx_booking_date (booking_date)
+  INDEX idx_booking_date (booking_date),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA CONVERSAZIONI ====================
@@ -121,6 +127,7 @@ CREATE TABLE conversations (
   unread_by_buyer BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
   FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -129,7 +136,8 @@ CREATE TABLE conversations (
   UNIQUE KEY unique_conversation (listing_id, buyer_id, seller_id),
   INDEX idx_buyer_id (buyer_id),
   INDEX idx_seller_id (seller_id),
-  INDEX idx_last_message_at (last_message_at)
+  INDEX idx_last_message_at (last_message_at),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA MESSAGGI ====================
@@ -141,6 +149,7 @@ CREATE TABLE messages (
   is_read BOOLEAN DEFAULT FALSE,
   read_at TIMESTAMP NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
   FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -148,7 +157,8 @@ CREATE TABLE messages (
   INDEX idx_conversation_id (conversation_id),
   INDEX idx_sender_id (sender_id),
   INDEX idx_created_at (created_at),
-  INDEX idx_conversation_read (conversation_id, is_read)
+  INDEX idx_conversation_read (conversation_id, is_read),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA VALUTAZIONI ====================
@@ -161,6 +171,7 @@ CREATE TABLE reviews (
   comment TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
   FOREIGN KEY (reviewer_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -169,7 +180,8 @@ CREATE TABLE reviews (
   UNIQUE KEY unique_review (listing_id, reviewer_id),
   INDEX idx_reviewed_user (reviewed_user_id),
   INDEX idx_reviewer_id (reviewer_id),
-  INDEX idx_created_at (created_at)
+  INDEX idx_created_at (created_at),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA PREFERITI ====================
@@ -178,12 +190,14 @@ CREATE TABLE favorites (
   user_id BIGINT NOT NULL,
   listing_id BIGINT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
   
   UNIQUE KEY unique_favorite (user_id, listing_id),
-  INDEX idx_user_id (user_id)
+  INDEX idx_user_id (user_id),
+  INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==================== TABELLA SEGNALAZIONI ====================
@@ -197,13 +211,31 @@ CREATE TABLE reports (
   status VARCHAR(20) DEFAULT 'open',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
   
   FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE SET NULL,
   FOREIGN KEY (reported_user_id) REFERENCES users(id) ON DELETE SET NULL,
   
   INDEX idx_status (status),
-  INDEX idx_created_at (created_at)
+  INDEX idx_created_at (created_at),
+  INDEX idx_deleted_at (deleted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==================== TABELLA SESSIONI ====================
+CREATE TABLE sessions (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  session_id VARCHAR(255) NOT NULL UNIQUE,
+  user_id BIGINT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP NOT NULL,
+  data LONGTEXT,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  
+  INDEX idx_session_id (session_id),
+  INDEX idx_user_id (user_id),
+  INDEX idx_expires_at (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
