@@ -148,38 +148,45 @@ class AuthController {
      * @param array $params URI parameters
      * @return string JSON response
      */
-    public function login(array $get, array $post, array $files, array $params): string {
-        try {
-            // Parse JSON request body
-            $input = json_decode(file_get_contents('php://input'), true) ?? [];
-            
-            // Validate required fields
-            $errors = [];
-            
-            if (empty($input['email'])) {
-                $errors[] = ['field' => 'email', 'message' => 'Email is required'];
-            }
-            
-            if (empty($input['password'])) {
-                $errors[] = ['field' => 'password', 'message' => 'Password is required'];
-            }
-            
-            // Return validation errors if any
-            if (!empty($errors)) {
-                return Response::validationErrors($errors);
-            }
-            
-            // Call AuthService to login
-            $result = $this->authService->login($input['email'], $input['password']);
-            
-            return Response::success($result, 200);
-            
-        } catch (Exception $e) {
-            // Invalid credentials error
-            error_log("Login error: " . $e->getMessage());
-            return Response::error('Invalid credentials', 401);
-        }
-    }
+     public function login(array $get, array $post, array $files, array $params): string {
+         try {
+             // Parse JSON request body
+             $input = json_decode(file_get_contents('php://input'), true) ?? [];
+             
+             // Validate required fields
+             $errors = [];
+             
+             if (empty($input['email'])) {
+                 $errors[] = ['field' => 'email', 'message' => 'Email is required'];
+             }
+             
+             if (empty($input['password'])) {
+                 $errors[] = ['field' => 'password', 'message' => 'Password is required'];
+             }
+             
+             // Return validation errors if any
+             if (!empty($errors)) {
+                 return Response::validationErrors($errors);
+             }
+             
+             // Call AuthService to login
+             $result = $this->authService->login($input['email'], $input['password']);
+             
+             return Response::success($result, 200);
+             
+         } catch (Exception $e) {
+             $message = $e->getMessage();
+             
+             // Check if it's a rate limit lockout
+             if (strpos($message, 'Too many login attempts') !== false) {
+                 return Response::error($message, 429);
+             }
+             
+             // Invalid credentials or other login error
+             error_log("Login error: " . $message);
+             return Response::error('Invalid credentials', 401);
+         }
+     }
     
     /**
      * Logout the current user.

@@ -108,7 +108,9 @@ class Router {
                         $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
                         $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
                         $sessionHandler = new \ReuseIT\Config\SessionHandler($this->pdo);
-                        $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler);
+                        $loginAttemptRepo = new \ReuseIT\Repositories\LoginAttemptRepository($this->pdo);
+                        $rateLimiter = new \ReuseIT\Services\RateLimitService($loginAttemptRepo);
+                        $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler, $rateLimiter);
                         $controller = new $controllerNamespace($authService);
                     } else {
                         // Default controller instantiation (no dependencies)
