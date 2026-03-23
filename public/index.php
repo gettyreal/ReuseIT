@@ -38,9 +38,11 @@ try {
      $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
      
      // Get request URI
-     // Phase 1: Use query string (?uri=/api/endpoint)
-     // Phase 2+: Upgrade to Apache .htaccess rewrite rules for pretty URLs
-     $uri = $_GET['uri'] ?? '/';
+     // Try multiple sources:
+     // 1. ?uri parameter (from .htaccess rewrite)
+     // 2. REQUEST_URI (from Apache mod_rewrite)
+     // 3. PATH_INFO (from server)
+     $uri = $_GET['uri'] ?? $_SERVER['REQUEST_URI'] ?? '/';
      
      // ========================================
      // 2. Load Configuration
