@@ -1,0 +1,44 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+.env*.js
+
+# API keys and credentials
+credentials.json
+*.pem
+*.key
+.aws/
+.vault/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node modules and dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build outputs
+/dist
+/build
+/.next
+/out
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Planning folder
+.planning/
+
+# Logs
+logs/
+*.log
