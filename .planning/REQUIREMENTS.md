@@ -124,67 +124,68 @@
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| USER-01 | Phase 2 | Pending |
-| USER-02 | Phase 2 | Pending |
-| USER-03 | Phase 3 | Pending |
-| USER-04 | Phase 2 | Pending |
-| LIST-01 | Phase 3 | Pending |
-| LIST-02 | Phase 3 | Pending |
-| LIST-03 | Phase 3 | Pending |
-| LIST-04 | Phase 3 | Pending |
-| LIST-05 | Phase 3 | Pending |
-| LIST-06 | Phase 3 | Pending |
-| LIST-07 | Phase 4 | Pending |
-| LIST-08 | Phase 4 | Pending |
-| GEO-01 | Phase 3 | Pending |
-| GEO-02 | Phase 4 | Pending |
-| GEO-03 | Phase 4 | Pending |
-| GEO-04 | Phase 4 | Pending |
-| GEO-05 | Phase 4 | Pending |
-| BOOK-01 | Phase 6 | Pending |
-| BOOK-02 | Phase 6 | Pending |
-| BOOK-03 | Phase 6 | Pending |
-| BOOK-04 | Phase 6 | Pending |
-| BOOK-05 | Phase 6 | Pending |
-| BOOK-06 | Phase 6 | Pending |
-| BOOK-07 | Phase 6 | Pending |
-| BOOK-08 | Phase 6 | Pending |
-| CHAT-01 | Phase 5 | Pending |
-| CHAT-02 | Phase 5 | Pending |
-| CHAT-03 | Phase 5 | Pending |
-| CHAT-04 | Phase 5 | Pending |
-| CHAT-05 | Phase 5 | Pending |
-| CHAT-06 | Phase 6 | Pending |
-| REV-01 | Phase 7 | Pending |
-| REV-02 | Phase 7 | Pending |
-| REV-03 | Phase 7 | Pending |
-| REV-04 | Phase 7 | Pending |
-| REV-05 | Phase 7 | Pending |
-| FAV-01 | Phase 8 | Pending |
-| FAV-02 | Phase 8 | Pending |
-| FAV-03 | Phase 8 | Pending |
-| ADMIN-01 | Phase 8 | Pending |
-| ADMIN-02 | Phase 8 | Pending |
-| ADMIN-03 | Phase 8 | Pending |
-| ADMIN-04 | Phase 8 | Pending |
-| ADMIN-05 | Phase 8 | Pending |
-| ADMIN-06 | Phase 8 | Pending |
-| API-01 | Phase 1 | Pending |
-| API-02 | Phase 1 | Pending |
-| API-03 | Phase 2 | Pending |
-| API-04 | Phase 1 | Pending |
-| API-05 | Phase 1 | Pending |
+| Requirement | Phase | Success Criterion | Status |
+|-------------|-------|-------------------|--------|
+| AUTH-01 | Phase 2 | User registration creates account with email/password/location | Mapped |
+| AUTH-02 | Phase 2 | Session persists across browser refresh | Mapped |
+| AUTH-03 | Phase 2 | User session persists across browser refresh | Mapped |
+| AUTH-04 | Phase 2 | User can log out from any page | Mapped |
+| USER-01 | Phase 2 | User can view their profile (name, avatar, bio, statistics) | Mapped |
+| USER-02 | Phase 2 | User can edit their profile (name, bio, location) | Mapped |
+| USER-03 | Phase 3 | Photos uploaded and stored securely | Mapped |
+| USER-04 | Phase 2 | User can view statistics (active listings count, completed sales, average rating) | Mapped |
+| LIST-01 | Phase 3 | Listing created with all required fields | Mapped |
+| LIST-02 | Phase 3 | Photos uploaded and stored securely | Mapped |
+| LIST-03 | Phase 3 | User can edit/filter listings by category, price, condition | Mapped |
+| LIST-04 | Phase 3 | Listing soft-deleted when cancelled | Mapped |
+| LIST-05 | Phase 3 | User can view all active listings in a sortable/filterable list | Mapped |
+| LIST-06 | Phase 3 | Listing created with all required fields | Mapped |
+| LIST-07 | Phase 4 | Listings returned filtered by category/price/condition | Mapped |
+| LIST-08 | Phase 4 | Keyword search filters by title and description | Mapped |
+| GEO-01 | Phase 3 | Address converted to coordinates | Mapped |
+| GEO-02 | Phase 4 | Interactive map displays listing markers | Mapped |
+| GEO-03 | Phase 4 | Clicking marker shows listing preview | Mapped |
+| GEO-04 | Phase 4 | Map filter by distance radius returns nearby listings | Mapped |
+| GEO-05 | Phase 4 | Listings sorted by distance (nearest first) | Mapped |
+| BOOK-01 | Phase 6 | User can create booking for a listing | Mapped |
+| BOOK-02 | Phase 6 | Conversation created automatically | Mapped |
+| BOOK-03 | Phase 6 | Buyer/seller see different booking views | Mapped |
+| BOOK-04 | Phase 6 | Booking status workflow progresses correctly | Mapped |
+| BOOK-05 | Phase 6 | Seller cannot double-book listing | Mapped |
+| BOOK-06 | Phase 6 | User can schedule pickup date/time for a confirmed booking | Mapped |
+| BOOK-07 | Phase 6 | User can mark a booking as completed after pickup | Mapped |
+| BOOK-08 | Phase 6 | User can cancel a booking (if not completed) | Mapped |
+| CHAT-01 | Phase 5 | User can view list of all conversations | Mapped |
+| CHAT-02 | Phase 5 | User can open a conversation and view message history | Mapped |
+| CHAT-03 | Phase 5 | User can send and receive messages | Mapped |
+| CHAT-04 | Phase 5 | Unread count tracks correctly | Mapped |
+| CHAT-05 | Phase 5 | Message history loads with pagination | Mapped |
+| CHAT-06 | Phase 6 | Conversation created automatically | Mapped |
+| REV-01 | Phase 7 | Review created with rating and comment | Mapped |
+| REV-02 | Phase 7 | Review only allowed after booking completed | Mapped |
+| REV-03 | Phase 7 | Review history visible on profile | Mapped |
+| REV-04 | Phase 7 | User avg_rating calculated correctly | Mapped |
+| REV-05 | Phase 7 | User profile shows rating and review count | Mapped |
+| FAV-01 | Phase 8 | User can save listing to favorites | Mapped |
+| FAV-02 | Phase 8 | User can view sorted/filtered favorites | Mapped |
+| FAV-03 | Phase 8 | User can remove listings from favorites | Mapped |
+| ADMIN-01 | Phase 8 | Admin can ban suspicious user | Mapped |
+| ADMIN-02 | Phase 8 | User can report inappropriate listing | Mapped |
+| ADMIN-03 | Phase 8 | User can report other users as suspicious | Mapped |
+| ADMIN-04 | Phase 8 | Admin can view and process reports | Mapped |
+| ADMIN-05 | Phase 8 | Admin can view and process reports | Mapped |
+| ADMIN-06 | Phase 8 | Admin can ban suspicious user | Mapped |
+| API-01 | Phase 1 | Response envelope works consistently | Mapped |
+| API-02 | Phase 1 | Response envelope works consistently | Mapped |
+| API-03 | Phase 2 | Session persists across browser refresh | Mapped |
+| API-04 | Phase 1 | All database tables exist with correct schema | Mapped |
+| API-05 | Phase 1 | Response envelope works consistently | Mapped |
 
 **Coverage:**
-- v1 requirements: 50 total
-- Mapped to phases: 50
+- v1 requirements: 54 total
+- Mapped to phases: 54
 - Unmapped: 0 ✓
+- **Status:** ROADMAP CREATED ✓ (2026-03-23)
 
 ---
 *Requirements defined: 2026-03-23*
