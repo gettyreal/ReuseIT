@@ -82,6 +82,14 @@ This roadmap breaks down the development of ReuseIT into 8 phases, each with out
 - **USER-04:** User can view statistics (active listings count, completed sales, average rating)
 - **API-03:** API enforces authentication for protected endpoints
 
+### Plans
+**Status:** ✓ PLANNED (3 plans, 11 tasks total)
+
+Plans:
+- [x] 02-01-PLAN.md — Authentication Infrastructure (registration, login, logout, geolocation)
+- [x] 02-02-PLAN.md — User Services & Profile Management (profile view/edit, authorization)
+- [x] 02-03-PLAN.md — Rate Limiting & Security (brute-force protection, lockout enforcement)
+
 **Unmapped after Phase 2:** 42 requirements (covered by later phases)
 
 ### Key Pitfalls to Address
