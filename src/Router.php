@@ -1,6 +1,8 @@
 <?php
 namespace ReuseIT;
 
+use PDO;
+
 /**
  * Router
  * 
@@ -10,11 +12,15 @@ namespace ReuseIT;
  */
 class Router {
     private array $routes = [];
+    private ?PDO $pdo = null;
     
     /**
      * Initialize router and register all routes.
+     * 
+     * @param PDO|null $pdo Database connection (optional, required for controllers that need it)
      */
-    public function __construct() {
+    public function __construct(?PDO $pdo = null) {
+        $this->pdo = $pdo;
         $this->registerRoutes();
     }
     
@@ -95,7 +101,19 @@ class Router {
                     
                     // Instantiate controller with full namespace
                     $controllerNamespace = 'ReuseIT\\Controllers\\' . $controllerClass;
-                    $controller = new $controllerNamespace();
+                    
+                    // Special handling for AuthController - inject dependencies
+                    if ($controllerClass === 'AuthController' && $this->pdo !== null) {
+                        // AuthController requires AuthService with its dependencies
+                        $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
+                        $sessionHandler = new \ReuseIT\Config\SessionHandler($this->pdo);
+                        $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler);
+                        $controller = new $controllerNamespace($authService);
+                    } else {
+                        // Default controller instantiation (no dependencies)
+                        $controller = new $controllerNamespace();
+                    }
                     
                     // Call action with request data and URI parameters
                     return $controller->$action($_GET, $_POST, $_FILES, $params);

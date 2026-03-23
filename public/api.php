@@ -94,7 +94,8 @@ try {
      // ========================================
      
      // Initialize router (registers all routes)
-     $router = new Router();
+     // Pass PDO connection for dependency injection in controllers
+     $router = new Router($pdo);
      
      // Dispatch request to appropriate controller action
      // Router returns JSON response string
