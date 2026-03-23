@@ -54,12 +54,25 @@ class Router {
     /**
      * Dispatch incoming request to appropriate controller action.
      * 
+     * Handles:
+     * 1. Route matching with parameterized URIs
+     * 2. Authentication middleware for protected endpoints
+     * 3. Controller instantiation and action execution
+     * 4. Error handling (returns 401 if authentication required but missing)
+     * 
      * @param string $method HTTP method (GET, POST, PATCH, DELETE, etc.)
      * @param string $uri Request URI (e.g., /api/listings/42)
      * @return string Response from controller action
      */
     public function dispatch(string $method, string $uri): string {
         $method = strtoupper($method);
+        
+        // Protected endpoints that require authentication
+        $protectedEndpoints = [
+            'UserController:update',
+            'AuthController:me',
+            // Phase 3+: ListingController:create, ListingController:update, etc.
+        ];
         
         // Iterate through registered routes for this method
         foreach ($this->routes[$method] ?? [] as $pattern => $handler) {
@@ -68,6 +81,17 @@ class Router {
                 [$controllerClass, $action] = $handler;
                 
                 try {
+                    // Check if endpoint requires authentication
+                    $endpointKey = "{$controllerClass}:{$action}";
+                    if (in_array($endpointKey, $protectedEndpoints)) {
+                        $middleware = new \ReuseIT\Middleware\AuthMiddleware();
+                        try {
+                            $middleware->requireAuth();
+                        } catch (\Exception $e) {
+                            return \ReuseIT\Response::error('Unauthorized', 401);
+                        }
+                    }
+                    
                     // Instantiate controller with full namespace
                     $controllerNamespace = 'ReuseIT\\Controllers\\' . $controllerClass;
                     $controller = new $controllerNamespace();
