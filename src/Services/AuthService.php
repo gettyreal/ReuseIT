@@ -126,16 +126,16 @@ class AuthService {
             throw new Exception('Invalid credentials');
         }
         
-        // Password is correct - clear failed attempts counter
-        $this->rateLimiter->clearAttempts($email, $ipAddress);
-        
-        // Create session (regenerates session ID for security)
-        $this->session->login($user['id']);
-        
-        return [
-            'user_id' => $user['id'],
-            'session_id' => session_id()
-        ];
+         // Password is correct - clear failed attempts counter
+         $this->rateLimiter->clearAttempts($email, $ipAddress);
+         
+         // Create session (returns the session_id created in database)
+         $sessionId = $this->session->login($user['id']);
+         
+         return [
+             'user_id' => $user['id'],
+             'session_id' => $sessionId
+         ];
     }
     
     /**

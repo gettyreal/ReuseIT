@@ -95,7 +95,7 @@ class Router {
                         try {
                             $middleware->requireAuth();
                         } catch (\Exception $e) {
-                            return \ReuseIT\Response::error('Unauthorized', 401);
+                            return \ReuseIT\Response::error('Unauthorized - user must be logged in (debug)', 401);
                         }
                     }
                     
@@ -112,6 +112,12 @@ class Router {
                         $rateLimiter = new \ReuseIT\Services\RateLimitService($loginAttemptRepo);
                         $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler, $rateLimiter);
                         $controller = new $controllerNamespace($authService);
+                    } elseif ($controllerClass === 'UserController' && $this->pdo !== null) {
+                        // UserController requires UserService with its dependencies
+                        $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $userService = new \ReuseIT\Services\UserService($userRepo);
+                        $response = new \ReuseIT\Response();
+                        $controller = new $controllerNamespace($userService, $response);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();

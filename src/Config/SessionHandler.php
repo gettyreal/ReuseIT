@@ -28,40 +28,42 @@ class SessionHandler {
         $this->pdo = $pdo;
     }
     
-    /**
-     * Create new session for authenticated user.
-     * 
-     * Generates random session ID, stores in database, sets secure cookie.
-     * Cookie includes SameSite=Strict for CSRF protection.
-     * 
-     * @param int $userId User ID to associate with session
-     * @return void
-     */
-    public function login(int $userId): void {
-        // Generate cryptographically secure random session ID
-        $sessionId = bin2hex(random_bytes(32));
-        
-        // Insert session into database
-        // expires_at is calculated by MySQL (30 minutes from now, in DB timezone)
-        $stmt = $this->pdo->prepare('
-            INSERT INTO sessions (session_id, user_id, created_at, expires_at)
-            VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE))
-        ');
-        $stmt->execute([$sessionId, $userId]);
-        
-        // Set secure cookie with CSRF protection
-        setcookie('PHPSESSID', $sessionId, [
-            'expires' => time() + self::SESSION_LIFETIME,  // 30 minutes
-            'path' => '/',
-            'domain' => $_SERVER['HTTP_HOST'] ?? 'localhost',
-            'secure' => true,           // HTTPS only (production requirement)
-            'httponly' => true,         // No JavaScript access (XSS protection)
-            'samesite' => 'Strict'      // CSRF protection (cookies not sent on cross-site requests)
-        ]);
-        
-        // Store user ID in session superglobal
-        $_SESSION['user_id'] = $userId;
-    }
+     /**
+      * Create new session for authenticated user.
+      * 
+      * Generates random session ID, stores in database, sets secure cookie.
+      * Cookie includes SameSite=Strict for CSRF protection.
+      * 
+      * @param int $userId User ID to associate with session
+      * @return string The session ID created
+      */
+     public function login(int $userId): string {
+         // Generate cryptographically secure random session ID
+         $sessionId = bin2hex(random_bytes(32));
+         
+         // Insert session into database
+         // expires_at is calculated by MySQL (30 minutes from now, in DB timezone)
+         $stmt = $this->pdo->prepare('
+             INSERT INTO sessions (session_id, user_id, created_at, expires_at)
+             VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE))
+         ');
+         $stmt->execute([$sessionId, $userId]);
+         
+         // Set secure cookie with CSRF protection
+         setcookie('PHPSESSID', $sessionId, [
+             'expires' => time() + self::SESSION_LIFETIME,  // 30 minutes
+             'path' => '/',
+             'domain' => $_SERVER['HTTP_HOST'] ?? 'localhost',
+             'secure' => true,           // HTTPS only (production requirement)
+             'httponly' => true,         // No JavaScript access (XSS protection)
+             'samesite' => 'Strict'      // CSRF protection (cookies not sent on cross-site requests)
+         ]);
+         
+         // Store user ID in session superglobal
+         $_SESSION['user_id'] = $userId;
+         
+         return $sessionId;
+     }
     
     /**
      * Validate session on incoming request.
