@@ -94,7 +94,7 @@ CREATE TABLE listing_photos (
 -- ==================== TABELLA PRENOTAZIONI ====================
 CREATE TABLE bookings (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  listing_id BIGINT NOT NULL UNIQUE,
+  listing_id BIGINT NOT NULL,
   buyer_id BIGINT NOT NULL,
   seller_id BIGINT NOT NULL,
   booking_status VARCHAR(20) NOT NULL DEFAULT 'pending',
@@ -109,6 +109,7 @@ CREATE TABLE bookings (
   FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE,
   
+  INDEX idx_listing_id (listing_id),
   INDEX idx_buyer_id (buyer_id),
   INDEX idx_seller_id (seller_id),
   INDEX idx_booking_status (booking_status),
