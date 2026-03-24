@@ -356,13 +356,3 @@ cp .env.example .env      # Create local .env
 php -S localhost:8000 -t public
 ```
 
-## Next Steps
-
-- [x] Setup Composer and Dotenv
-- [x] Configure environment variables
-- [ ] Setup Phase 2 (Authentication) - user registration, login, JWT tokens
-- [ ] Implement remaining endpoints per ROADMAP.md
-- [ ] Configure production environment variables
-- [ ] Setup geolocation features with Google Maps API
-- [ ] Add database migrations for additional tables
-
