@@ -53,7 +53,7 @@ CREATE TABLE listings (
   brand VARCHAR(100),
   model VARCHAR(100),
   year INT,
-  condition VARCHAR(50),
+  `condition` VARCHAR(50),
   accessories JSON,
   latitude DECIMAL(10, 8) NOT NULL,
   longitude DECIMAL(11, 8) NOT NULL,

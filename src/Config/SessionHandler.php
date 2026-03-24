@@ -41,15 +41,13 @@ class SessionHandler {
         // Generate cryptographically secure random session ID
         $sessionId = bin2hex(random_bytes(32));
         
-        // Calculate expiration time (30 minutes from now)
-        $expiresAt = date('Y-m-d H:i:s', time() + self::SESSION_LIFETIME);
-        
         // Insert session into database
+        // expires_at is calculated by MySQL (30 minutes from now, in DB timezone)
         $stmt = $this->pdo->prepare('
             INSERT INTO sessions (session_id, user_id, created_at, expires_at)
-            VALUES (?, ?, NOW(), ?)
+            VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE))
         ');
-        $stmt->execute([$sessionId, $userId, $expiresAt]);
+        $stmt->execute([$sessionId, $userId]);
         
         // Set secure cookie with CSRF protection
         setcookie('PHPSESSID', $sessionId, [

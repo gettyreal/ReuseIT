@@ -9,10 +9,10 @@
  */
 
 // Database connection parameters
-$dbHost = getenv('DB_HOST') ?: 'localhost';
-$dbName = getenv('DB_NAME') ?: 'reuseit';
-$dbUser = getenv('DB_USER') ?: 'root';
-$dbPassword = getenv('DB_PASSWORD') ?: '';
+$dbHost = $_ENV['DB_HOST'];
+$dbName = $_ENV['DB_NAME'];
+$dbUser = $_ENV['DB_USER'];
+$dbPassword = $_ENV['DB_PASSWORD'];
 
 // Build DSN (Data Source Name)
 $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";

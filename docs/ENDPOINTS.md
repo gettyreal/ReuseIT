@@ -17,20 +17,30 @@ curl http://localhost:8000/api/health
 Crea nuovo utente.
 
 ```bash
-curl -X POST http://localhost:8000/api/auth/register \
+curl -X POST http://localhost:8020/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
     "password": "password123",
     "first_name": "John",
     "last_name": "Doe",
-    "street": "Via Roma 1",
-    "city": "Milano",
-    "province": "MI",
-    "postal_code": "20100",
-    "country": "Italy"
+    "address": {
+      "street": "Via Roma 1",
+      "city": "Milano",
+      "province": "MI",
+      "postal_code": "20100",
+      "country": "Italy"
+    },
+    "coordinates": {
+      "lat": 45.4654,
+      "lng": 9.1859
+    }
   }'
 ```
+
+**Note**: 
+- `coordinates` è opzionale. Se non fornito, il sistema calcolerà automaticamente le coordinate tramite Google API
+- Per testare ora senza Google API configurato, fornisci `coordinates` manualmente
 
 ---
 
