@@ -42,3 +42,4 @@ logs/
 
 # vendor
 vendor/
+composer.phar

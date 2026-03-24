@@ -140,34 +140,38 @@ class Router {
      * @param array $params Reference array to populate with matched parameters
      * @return bool True if URI matches pattern
      */
-    private function matches(string $pattern, string $uri, array &$params): bool {
-        // Convert pattern to regex
-        // Replace :id with named group (?P<id>\d+)
-        // Replace :word with named group (?P<word>[a-z0-9_-]+)
-        $regex = preg_replace_callback(
-            '/:(id|word|slug)/',
-            fn($m) => match($m[1]) {
-                'id' => '(?P<id>\d+)',
-                'word' => '(?P<word>[a-z0-9_-]+)',
-                'slug' => '(?P<slug>[a-z0-9_-]+)',
-            },
-            $pattern
-        );
-        
-        // Anchor pattern
-        $regex = '^' . $regex . '$';
-        
-        // Match URI against pattern
-        if (preg_match('/' . str_replace('/', '\/', $regex) . '/', $uri, $matches)) {
-            // Extract named groups
-            foreach ($matches as $key => $value) {
-                if (!is_numeric($key)) {
-                    $params[$key] = $value;
-                }
-            }
-            return true;
-        }
-        
-        return false;
-    }
+     private function matches(string $pattern, string $uri, array &$params): bool {
+         // Convert pattern to regex
+         // Replace :id with named group (?P<id>\d+)
+         // Replace :word with named group (?P<word>[a-z0-9_-]+)
+         $regex = preg_replace_callback(
+             '/:(id|word|slug)/',
+             function($m) {
+                 $paramType = $m[1];
+                 $patterns = [
+                     'id' => '(?P<id>\d+)',
+                     'word' => '(?P<word>[a-z0-9_-]+)',
+                     'slug' => '(?P<slug>[a-z0-9_-]+)',
+                 ];
+                 return $patterns[$paramType] ?? '(?P<param>[a-z0-9_-]+)';
+             },
+             $pattern
+         );
+         
+         // Anchor pattern
+         $regex = '^' . $regex . '$';
+         
+         // Match URI against pattern
+         if (preg_match('/' . str_replace('/', '\/', $regex) . '/', $uri, $matches)) {
+             // Extract named groups
+             foreach ($matches as $key => $value) {
+                 if (!is_numeric($key)) {
+                     $params[$key] = $value;
+                 }
+             }
+             return true;
+         }
+         
+         return false;
+     }
 }
