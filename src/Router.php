@@ -46,6 +46,10 @@ class Router {
         $this->routes['PATCH']['/api/listings/:id'] = ['ListingController', 'update'];
         $this->routes['DELETE']['/api/listings/:id'] = ['ListingController', 'delete'];
         
+        // Photo upload endpoints (Phase 3)
+        $this->routes['POST']['/api/listings/:id/photos'] = ['ListingController', 'uploadPhotos'];
+        $this->routes['POST']['/api/users/:id/avatar'] = ['ListingController', 'uploadAvatar'];
+        
         // User endpoints (Phase 2)
         $this->routes['POST']['/api/auth/register'] = ['AuthController', 'register'];
         $this->routes['POST']['/api/auth/login'] = ['AuthController', 'login'];
@@ -78,6 +82,8 @@ class Router {
         $protectedEndpoints = [
             'UserController:update',
             'AuthController:me',
+            'ListingController:uploadPhotos',
+            'ListingController:uploadAvatar',
             // Phase 3+: ListingController:create, ListingController:update, etc.
         ];
         
@@ -118,6 +124,12 @@ class Router {
                         $userService = new \ReuseIT\Services\UserService($userRepo);
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($userService, $response);
+                    } elseif ($controllerClass === 'ListingController' && $this->pdo !== null) {
+                        // ListingController requires PhotoUploadService and dependencies
+                        $photoRepo = new \ReuseIT\Repositories\ListingPhotoRepository($this->pdo);
+                        $photoUploadService = new \ReuseIT\Services\PhotoUploadService($this->pdo, $photoRepo);
+                        $response = new \ReuseIT\Response();
+                        $controller = new $controllerNamespace($photoUploadService, $photoRepo, $this->pdo, $response);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
