@@ -82,9 +82,11 @@ class Router {
         $protectedEndpoints = [
             'UserController:update',
             'AuthController:me',
+            'ListingController:create',
+            'ListingController:update',
+            'ListingController:delete',
             'ListingController:uploadPhotos',
             'ListingController:uploadAvatar',
-            // Phase 3+: ListingController:create, ListingController:update, etc.
         ];
         
         // Iterate through registered routes for this method
@@ -125,11 +127,14 @@ class Router {
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($userService, $response);
                     } elseif ($controllerClass === 'ListingController' && $this->pdo !== null) {
-                        // ListingController requires PhotoUploadService and dependencies
+                        // ListingController requires ListingService and PhotoUploadService with dependencies
+                        $listingRepo = new \ReuseIT\Repositories\ListingRepository($this->pdo);
                         $photoRepo = new \ReuseIT\Repositories\ListingPhotoRepository($this->pdo);
+                        $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
+                        $listingService = new \ReuseIT\Services\ListingService($this->pdo, $listingRepo, $photoRepo, $geoService);
                         $photoUploadService = new \ReuseIT\Services\PhotoUploadService($this->pdo, $photoRepo);
                         $response = new \ReuseIT\Response();
-                        $controller = new $controllerNamespace($photoUploadService, $photoRepo, $this->pdo, $response);
+                        $controller = new $controllerNamespace($photoUploadService, $photoRepo, $this->pdo, $response, $listingService, $listingRepo);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
