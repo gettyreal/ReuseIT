@@ -99,10 +99,10 @@ class SessionHandler {
         $_SESSION['user_id'] = $row['user_id'];
         
         // Refresh expiration on activity (extends session while user is active)
-        $newExpires = date('Y-m-d H:i:s', time() + self::SESSION_LIFETIME);
+        // Use database NOW() to avoid timezone mismatch between PHP and database
         $this->pdo->prepare('
-            UPDATE sessions SET expires_at = ? WHERE session_id = ?
-        ')->execute([$newExpires, $sessionId]);
+            UPDATE sessions SET expires_at = DATE_ADD(NOW(), INTERVAL 30 MINUTE) WHERE session_id = ?
+        ')->execute([$sessionId]);
         
         return true;
     }
