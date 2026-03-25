@@ -430,6 +430,169 @@ class ListingService {
     }
     
     /**
+     * Search and filter listings by multiple criteria.
+     * 
+     * Supported filters:
+     * - category_id: int
+     * - condition: string
+     * - price_min: float
+     * - price_max: float
+     * - keyword: string
+     * 
+     * @param array $filters Filter criteria
+     * @param int $limit Results per page (default 20, max 100)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array with 'listings', 'total', 'limit', 'offset' for pagination
+     * @throws Exception On validation errors
+     */
+    public function searchListings(array $filters = [], int $limit = 20, int $offset = 0): array {
+        // Validate limit and offset
+        $limit = min((int)$limit, 100); // Cap at 100
+        if ($limit < 1) {
+            $limit = 20;
+        }
+        
+        $offset = max((int)$offset, 0);
+        
+        // Validate price range if provided
+        if (isset($filters['price_min']) && isset($filters['price_max'])) {
+            if ($filters['price_min'] > $filters['price_max']) {
+                throw new Exception(json_encode(['price' => 'Minimum price must not exceed maximum price']), 422);
+            }
+        }
+        
+        // Get paginated results
+        $listings = $this->listingRepo->filterCombined($filters, $limit, $offset);
+        
+        // Get total count for pagination metadata
+        $total = $this->countFilteredListings($filters);
+        
+        return [
+            'listings' => $listings,
+            'total' => $total,
+            'limit' => $limit,
+            'offset' => $offset
+        ];
+    }
+    
+    /**
+     * Get listing details with full information.
+     * 
+     * @param int $listingId Listing ID
+     * @return array|null Listing with photos or null if not found
+     */
+    public function getListingDetails(int $listingId): ?array {
+        $listing = $this->listingRepo->findWithPhotos($listingId);
+        if (!$listing) {
+            return null;
+        }
+        
+        // Increment view count
+        $this->listingRepo->incrementViewCount($listingId);
+        
+        return $listing;
+    }
+    
+    /**
+     * Get available filter options for frontend UI.
+     * 
+     * @return array Array with 'categories', 'conditions', 'priceRange'
+     */
+    public function getFilterOptions(): array {
+        // Get categories
+        $categories = $this->getCategories();
+        
+        // Get condition enum
+        $conditions = ['Excellent', 'Good', 'Fair', 'Poor'];
+        
+        // Get price range
+        $priceRange = $this->getPriceRange();
+        
+        return [
+            'categories' => $categories,
+            'conditions' => $conditions,
+            'priceRange' => $priceRange
+        ];
+    }
+    
+    /**
+     * Count listings matching given filters.
+     * Helper for pagination metadata.
+     * 
+     * @param array $filters Filter criteria
+     * @return int Total count
+     */
+    private function countFilteredListings(array $filters = []): int {
+        // Build same WHERE clause as filterCombined
+        $sql = "SELECT COUNT(*) as total FROM listings l 
+                LEFT JOIN users u ON l.seller_id = u.id
+                WHERE 1=1 AND l.deleted_at IS NULL AND u.deleted_at IS NULL";
+        
+        $params = [];
+        
+        if (isset($filters['category_id'])) {
+            $sql .= " AND l.category_id = ?";
+            $params[] = $filters['category_id'];
+        }
+        
+        if (isset($filters['condition'])) {
+            $sql .= " AND l.condition = ?";
+            $params[] = $filters['condition'];
+        }
+        
+        if (isset($filters['price_min'])) {
+            $sql .= " AND l.price >= ?";
+            $params[] = $filters['price_min'];
+        }
+        
+        if (isset($filters['price_max'])) {
+            $sql .= " AND l.price <= ?";
+            $params[] = $filters['price_max'];
+        }
+        
+        if (isset($filters['keyword']) && !empty($filters['keyword'])) {
+            $keyword = '%' . $filters['keyword'] . '%';
+            $sql .= " AND (l.title LIKE ? OR l.description LIKE ?)";
+            $params[] = $keyword;
+            $params[] = $keyword;
+        }
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+    
+    /**
+     * Get all active categories for filter UI.
+     * 
+     * @return array Array of categories with id and name
+     */
+    private function getCategories(): array {
+        $sql = "SELECT id, name FROM categories WHERE deleted_at IS NULL ORDER BY name ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Get min and max price range for filter UI.
+     * 
+     * @return array Array with 'min' and 'max' price
+     */
+    private function getPriceRange(): array {
+        $sql = "SELECT MIN(price) as min, MAX(price) as max FROM listings WHERE deleted_at IS NULL";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'min' => $result['min'] ? (float)$result['min'] : 0,
+            'max' => $result['max'] ? (float)$result['max'] : 999999.99
+        ];
+    }
+    
+    /**
      * Format address components into readable string.
      * 
      * @param array $address Address components

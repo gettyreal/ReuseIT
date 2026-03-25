@@ -184,15 +184,193 @@ class ListingRepository extends BaseRepository {
     }
     
     /**
-     * Increment view count for a listing.
-     * Called when listing is viewed.
+     * Search listings by keyword in title and description.
      * 
-     * @param int $id Listing ID
-     * @return bool True if increment successful
+     * @param string $keyword Search term
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array of matching listings with soft-delete filtering applied
      */
-    public function incrementViewCount(int $id): bool {
-        $sql = "UPDATE {$this->table} SET view_count = view_count + 1 WHERE id = ?";
+    public function searchByKeyword(string $keyword, int $limit = 20, int $offset = 0): array {
+        $keyword = '%' . $keyword . '%';
+        
+        $sql = "
+            SELECT l.*, 
+                   u.first_name, u.last_name, u.avatar_url,
+                   COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE (l.title LIKE ? OR l.description LIKE ?) AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            GROUP BY l.id
+            ORDER BY l.created_at DESC
+            LIMIT ? OFFSET ?
+        ";
+        
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$id]);
+        $stmt->execute([$keyword, $keyword, $limit, $offset]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Filter listings by category.
+     * 
+     * @param int $categoryId Category ID
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array of listings in category with soft-delete filtering
+     */
+    public function filterByCategory(int $categoryId, int $limit = 20, int $offset = 0): array {
+        $sql = "
+            SELECT l.*, 
+                   u.first_name, u.last_name, u.avatar_url,
+                   COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE l.category_id = ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            GROUP BY l.id
+            ORDER BY l.created_at DESC
+            LIMIT ? OFFSET ?
+        ";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$categoryId, $limit, $offset]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Filter listings by condition.
+     * 
+     * Valid conditions: ['Excellent', 'Good', 'Fair', 'Poor']
+     * 
+     * @param string $condition Item condition
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array of listings with matching condition
+     */
+    public function filterByCondition(string $condition, int $limit = 20, int $offset = 0): array {
+        $validConditions = ['Excellent', 'Good', 'Fair', 'Poor'];
+        if (!in_array($condition, $validConditions)) {
+            return [];
+        }
+        
+        $sql = "
+            SELECT l.*, 
+                   u.first_name, u.last_name, u.avatar_url,
+                   COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE l.condition = ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            GROUP BY l.id
+            ORDER BY l.created_at DESC
+            LIMIT ? OFFSET ?
+        ";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$condition, $limit, $offset]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Filter listings by price range.
+     * 
+     * @param float $minPrice Minimum price
+     * @param float $maxPrice Maximum price
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array of listings within price range
+     */
+    public function filterByPrice(float $minPrice, float $maxPrice, int $limit = 20, int $offset = 0): array {
+        if ($minPrice > $maxPrice) {
+            return [];
+        }
+        
+        $sql = "
+            SELECT l.*, 
+                   u.first_name, u.last_name, u.avatar_url,
+                   COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE l.price BETWEEN ? AND ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            GROUP BY l.id
+            ORDER BY l.created_at DESC
+            LIMIT ? OFFSET ?
+        ";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$minPrice, $maxPrice, $limit, $offset]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Filter listings by multiple criteria combined with AND logic.
+     * 
+     * Supported filters:
+     * - category_id: int
+     * - condition: string (enum)
+     * - price_min: float
+     * - price_max: float
+     * - keyword: string (searches title and description)
+     * 
+     * @param array $filters Filter criteria hash
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array of listings matching all filters
+     */
+    public function filterCombined(array $filters = [], int $limit = 20, int $offset = 0): array {
+        $sql = "
+            SELECT l.*, 
+                   u.first_name, u.last_name, u.avatar_url,
+                   COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE 1=1 AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+        ";
+        
+        $params = [];
+        
+        // Category filter
+        if (isset($filters['category_id'])) {
+            $sql .= " AND l.category_id = ?";
+            $params[] = $filters['category_id'];
+        }
+        
+        // Condition filter
+        if (isset($filters['condition'])) {
+            $sql .= " AND l.condition = ?";
+            $params[] = $filters['condition'];
+        }
+        
+        // Price range filter
+        if (isset($filters['price_min'])) {
+            $sql .= " AND l.price >= ?";
+            $params[] = $filters['price_min'];
+        }
+        
+        if (isset($filters['price_max'])) {
+            $sql .= " AND l.price <= ?";
+            $params[] = $filters['price_max'];
+        }
+        
+        // Keyword search filter
+        if (isset($filters['keyword']) && !empty($filters['keyword'])) {
+            $keyword = '%' . $filters['keyword'] . '%';
+            $sql .= " AND (l.title LIKE ? OR l.description LIKE ?)";
+            $params[] = $keyword;
+            $params[] = $keyword;
+        }
+        
+        // Add grouping, sorting, and pagination
+        $sql .= " GROUP BY l.id ORDER BY l.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
