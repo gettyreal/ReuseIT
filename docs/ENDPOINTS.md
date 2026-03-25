@@ -112,10 +112,3 @@ curl -X PATCH http://localhost:8000/api/users/1/profile \
 ```
 
 ---
-
-## Note di Test
-
-- Usa `-c cookies.txt` per salvare i cookie da login
-- Usa `-b cookies.txt` per inviare i cookie nelle richieste successive
-- Gli endpoint `/api/auth/me` e `/api/users/:id/profile` richiedono sessione attiva
-- Tutti gli ID negli URL sono numerici (1, 2, 3, ecc.)
