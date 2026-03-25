@@ -41,6 +41,8 @@ class Router {
         
         // Listing endpoints (Phase 3)
         $this->routes['GET']['/api/listings'] = ['ListingController', 'list'];
+        $this->routes['GET']['/api/listings/search'] = ['ListingController', 'search'];
+        $this->routes['GET']['/api/listings/filter-options'] = ['ListingController', 'filterOptions'];
         $this->routes['GET']['/api/listings/:id'] = ['ListingController', 'show'];
         $this->routes['POST']['/api/listings'] = ['ListingController', 'create'];
         $this->routes['PATCH']['/api/listings/:id'] = ['ListingController', 'update'];

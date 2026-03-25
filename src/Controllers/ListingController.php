@@ -610,6 +610,95 @@ class ListingController
     }
 
     /**
+     * GET /api/listings/search
+     *
+     * Search and filter listings with advanced criteria.
+     * PUBLIC endpoint - no authentication required.
+     *
+     * Query parameters:
+     * - keyword: string (searches title and description)
+     * - category_id: int
+     * - condition: string (enum: Excellent, Good, Fair, Poor)
+     * - price_min: float
+     * - price_max: float
+     * - limit: int (default 20, max 100)
+     * - offset: int (default 0)
+     *
+     * @param array $get Query parameters
+     * @param array $post POST parameters
+     * @param array $files $_FILES array
+     * @param array $params URI parameters
+     * @return string JSON response
+     */
+    public function search(array $get, array $post, array $files, array $params): string
+    {
+        try {
+            // Extract query parameters
+            $keyword = $get['keyword'] ?? '';
+            $categoryId = isset($get['category_id']) ? (int)$get['category_id'] : null;
+            $condition = $get['condition'] ?? '';
+            $priceMin = isset($get['price_min']) ? (float)$get['price_min'] : null;
+            $priceMax = isset($get['price_max']) ? (float)$get['price_max'] : null;
+            $limit = isset($get['limit']) ? (int)$get['limit'] : 20;
+            $offset = isset($get['offset']) ? (int)$get['offset'] : 0;
+
+            // Build filters array
+            $filters = [];
+            if (!empty($keyword)) {
+                $filters['keyword'] = $keyword;
+            }
+            if ($categoryId !== null) {
+                $filters['category_id'] = $categoryId;
+            }
+            if (!empty($condition)) {
+                $filters['condition'] = $condition;
+            }
+            if ($priceMin !== null) {
+                $filters['price_min'] = $priceMin;
+            }
+            if ($priceMax !== null) {
+                $filters['price_max'] = $priceMax;
+            }
+
+            // Perform search
+            $result = $this->listingService->searchListings($filters, $limit, $offset);
+
+            // Return paginated results
+            return $this->response->success($result, 200);
+        } catch (\Exception $e) {
+            $code = (int)$e->getCode() ?: 500;
+            return $this->response->error($e->getMessage(), $code);
+        }
+    }
+
+    /**
+     * GET /api/listings/filter-options
+     *
+     * Get available filter values for UI dropdowns and sliders.
+     * PUBLIC endpoint - no authentication required.
+     *
+     * Response includes:
+     * - categories: list of active categories
+     * - conditions: enum values for condition filter
+     * - priceRange: min/max prices across all listings
+     *
+     * @param array $get Query parameters
+     * @param array $post POST parameters
+     * @param array $files $_FILES array
+     * @param array $params URI parameters
+     * @return string JSON response
+     */
+    public function filterOptions(array $get, array $post, array $files, array $params): string
+    {
+        try {
+            $options = $this->listingService->getFilterOptions();
+            return $this->response->success($options, 200);
+        } catch (\Exception $e) {
+            return $this->response->error($e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Update user avatar URL in database.
      *
      * @param int $userId
