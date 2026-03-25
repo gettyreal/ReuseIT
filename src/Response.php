@@ -21,7 +21,7 @@ class Response {
      * @param int $statusCode HTTP status code (default 200 OK)
      * @return string JSON-encoded response
      */
-    public static function success(mixed $data, int $statusCode = 200): string {
+    public static function success($data, int $statusCode = 200): string {
         http_response_code($statusCode);
         
         return json_encode([
