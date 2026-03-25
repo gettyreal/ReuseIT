@@ -62,6 +62,137 @@ class GeolocationService {
     }
     
     /**
+     * Geocode an address and return candidate results for user selection.
+     * 
+     * Handles ambiguous addresses by returning a list of candidates.
+     * Single matches are cached and returned as one candidate.
+     * Multiple matches returned for user to pick from.
+     * 
+     * @param string $address Address string (can be partially formatted)
+     * @return array|null Array of candidates with 'address', 'lat', 'lng', or null on error
+     */
+    public function geocodeAddressWithCandidates(string $address): ?array {
+        if (empty($address)) {
+            return null;
+        }
+        
+        // Normalize for caching (simple normalization for string input)
+        $normalizedAddress = trim($address);
+        $cacheKey = md5($normalizedAddress);
+        
+        // Step 1: Check cache first
+        $cached = $this->getCachedAddressCandidates($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+        
+        // Step 2: Call Google Maps API
+        $results = $this->callGoogleMapsAPISingleResults($normalizedAddress);
+        if ($results === null || empty($results)) {
+            return null;
+        }
+        
+        // Step 3: Format candidates for return
+        $candidates = [];
+        foreach ($results as $result) {
+            $candidates[] = [
+                'address' => $result['formatted_address'],
+                'lat' => (float) $result['geometry']['location']['lat'],
+                'lng' => (float) $result['geometry']['location']['lng']
+            ];
+        }
+        
+        // Step 4: Cache only the FIRST (highest confidence) result
+        if (!empty($candidates)) {
+            $this->cacheAddressCandidate($cacheKey, $candidates[0]);
+        }
+        
+        return $candidates;
+    }
+    
+    /**
+     * Check cache for previously geocoded address.
+     * 
+     * @param string $addressHash MD5 hash of address
+     * @return array|null Single-element array if cached, null otherwise
+     */
+    private function getCachedAddressCandidates(string $addressHash): ?array {
+        $sql = "SELECT address_string, latitude, longitude FROM geocoding_cache 
+                WHERE address_hash = ? LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$addressHash]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            return [
+                [
+                    'address' => $result['address_string'],
+                    'lat' => (float) $result['latitude'],
+                    'lng' => (float) $result['longitude']
+                ]
+            ];
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Call Google Maps Geocoding API and return full results array.
+     * 
+     * @param string $address Address to geocode
+     * @return array|null Array of all result objects from Google, or null on error
+     */
+    private function callGoogleMapsAPISingleResults(string $address): ?array {
+        try {
+            $encodedAddress = urlencode($address);
+            $url = "https://maps.googleapis.com/maps/api/geocode/json?address={$encodedAddress}&key={$this->apiKey}";
+            
+            $response = @file_get_contents($url, false, stream_context_create([
+                'ssl' => ['verify_peer' => false]
+            ]));
+            
+            if ($response === false) {
+                return null;
+            }
+            
+            $data = json_decode($response, true);
+            
+            // Check for error status or missing results
+            if (empty($data['results'])) {
+                return null;
+            }
+            
+            return $data['results'];
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Cache a single address candidate to geocoding_cache.
+     * 
+     * @param string $addressHash MD5 hash of normalized address
+     * @param array $candidate Candidate with 'address', 'lat', 'lng'
+     */
+    private function cacheAddressCandidate(string $addressHash, array $candidate): void {
+        try {
+            $sql = "INSERT INTO geocoding_cache (address_hash, address_string, latitude, longitude, created_at) 
+                    VALUES (?, ?, ?, ?, NOW())
+                    ON DUPLICATE KEY UPDATE created_at = NOW()";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                $addressHash,
+                $candidate['address'],
+                $candidate['lat'],
+                $candidate['lng']
+            ]);
+        } catch (Exception $e) {
+            // Silently fail caching
+        }
+    }
+    
+    /**
      * Normalize address array into a string format for caching/API.
      * 
      * @param array $address Address components

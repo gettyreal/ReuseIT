@@ -46,12 +46,16 @@ class ListingService {
      * Required fields: title, description, category_id, price, condition, address
      * Optional fields: brand, model, year, accessories
      * 
+     * If address is ambiguous (multiple candidates), returns candidates for user selection.
+     * If address is unambiguous (1 candidate), auto-selects and creates listing.
+     * 
      * @param array $data Listing data
      * @param int $userId Current user ID (seller_id)
-     * @return int Created listing ID
+     * @return array|int If ambiguous: ['candidates' => [...]] (HTTP 200)
+     *                   If resolved: listing ID (HTTP 201)
      * @throws Exception On validation or geocoding failure
      */
-    public function createListing(array $data, int $userId): int {
+    public function createListing(array $data, int $userId) {
         // Validate required fields
         $errors = $this->validateListingFields($data);
         if (!empty($errors)) {
@@ -63,16 +67,27 @@ class ListingService {
             throw new Exception(json_encode(['category_id' => 'Invalid category']), 422);
         }
         
-        // Geocode address to get coordinates
-        $addressData = $data['address'] ?? [];
-        if (empty($addressData)) {
+        // Geocode address - get candidates
+        $address = $data['address'] ?? '';
+        if (empty($address)) {
             throw new Exception(json_encode(['address' => 'Address is required']), 422);
         }
         
-        $coordinates = $this->geolocation->geocodeAddress($addressData);
-        if (!$coordinates) {
-            throw new Exception('Address geocoding failed. Please verify the address and try again.', 400);
+        $candidates = $this->geolocation->geocodeAddressWithCandidates($address);
+        if ($candidates === null || empty($candidates)) {
+            throw new Exception('Address not found. Please try again with exact address.', 400);
         }
+        
+        // If multiple candidates: return them for user selection
+        if (count($candidates) > 1) {
+            return [
+                'candidates' => $candidates,
+                'listing_candidate' => null
+            ];
+        }
+        
+        // If single candidate: auto-select and create listing
+        $selectedCandidate = $candidates[0];
         
         // Prepare listing data for storage
         $listingData = [
@@ -82,9 +97,9 @@ class ListingService {
             'description' => $data['description'],
             'price' => (float)$data['price'],
             'condition' => $data['condition'],
-            'latitude' => $coordinates['lat'],
-            'longitude' => $coordinates['lng'],
-            'location_address' => $this->formatAddress($addressData),
+            'latitude' => $selectedCandidate['lat'],
+            'longitude' => $selectedCandidate['lng'],
+            'location_address' => $selectedCandidate['address'],
             'status' => 'active',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
