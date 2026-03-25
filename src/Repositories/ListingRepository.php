@@ -373,4 +373,17 @@ class ListingRepository extends BaseRepository {
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    /**
+     * Increment the view count for a listing.
+     * Used when listing details are viewed to track engagement.
+     * 
+     * @param int $id Listing ID
+     * @return void
+     */
+    public function incrementViewCount(int $id): void {
+        $sql = "UPDATE {$this->table} SET view_count = view_count + 1 WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+    }
 }
