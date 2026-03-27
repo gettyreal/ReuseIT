@@ -2,6 +2,7 @@
 namespace ReuseIT\Services;
 
 use ReuseIT\Repositories\UserRepository;
+use Exception;
 
 /**
  * UserService
@@ -10,18 +11,23 @@ use ReuseIT\Repositories\UserRepository;
  * Provides business logic layer between controllers and repository.
  * 
  * Whitelist pattern: Only allows editing specific profile fields.
+ * Integrates geocoding for address updates: if address fields are provided
+ * without explicit coordinates, automatically geocodes to get lat/lng.
  * Statistics fields (active_listings_count, etc.) are deferred to future phases.
  */
 class UserService {
     private UserRepository $userRepo;
+    private GeolocationService $geoService;
     
     /**
-     * Initialize service with user repository dependency.
+     * Initialize service with user repository and geocoding dependencies.
      * 
      * @param UserRepository $userRepo User repository for database access
+     * @param GeolocationService $geoService Address geocoding service
      */
-    public function __construct(UserRepository $userRepo) {
+    public function __construct(UserRepository $userRepo, GeolocationService $geoService) {
         $this->userRepo = $userRepo;
+        $this->geoService = $geoService;
     }
     
     /**
@@ -32,13 +38,13 @@ class UserService {
      * 
      * @param int $userId User ID
      * @return array Complete user profile with nested address and statistics
-     * @throws \Exception If user not found
+     * @throws Exception If user not found
      */
     public function getProfile(int $userId): array {
         $user = $this->userRepo->find($userId);
         
         if (!$user) {
-            throw new \Exception('User not found');
+            throw new Exception('User not found');
         }
         
         // Build response object with all fields
@@ -66,7 +72,7 @@ class UserService {
     }
     
     /**
-     * Update user profile with whitelist validation.
+     * Update user profile with whitelist validation and automatic geocoding.
      * 
      * Only allows editing specific fields:
      * - first_name, last_name
@@ -75,9 +81,14 @@ class UserService {
      * 
      * Rejects email, password, and other sensitive fields.
      * 
+     * If address fields are provided but coordinates are not, automatically
+     * geocodes the address using Google Maps API (same behavior as registration).
+     * Caches results to minimize API calls.
+     * 
      * @param int $userId User ID
      * @param array $updates Field-value pairs to update
      * @return bool True if update successful, false otherwise
+     * @throws Exception On geocoding failure
      */
     public function updateProfile(int $userId, array $updates): bool {
         // Whitelist allowed fields
@@ -98,6 +109,39 @@ class UserService {
         // If no fields to update after filtering, return success
         if (empty($filtered)) {
             return true;
+        }
+        
+        // Check if address fields are being updated
+        $addressFields = ['address_street', 'address_city', 'address_province', 'address_postal_code', 'address_country'];
+        $isAddressUpdate = count(array_intersect(array_keys($filtered), $addressFields)) > 0;
+        
+        // If address is being updated, geocode it to get new coordinates
+        if ($isAddressUpdate) {
+            // Construct address array from the update data
+            $address = [
+                'street' => $filtered['address_street'] ?? '',
+                'city' => $filtered['address_city'] ?? '',
+                'province' => $filtered['address_province'] ?? '',
+                'postal_code' => $filtered['address_postal_code'] ?? '',
+                'country' => $filtered['address_country'] ?? ''
+            ];
+            
+            // Only geocode if all address components are present
+            if (!empty($address['street']) && !empty($address['city']) && 
+                !empty($address['province']) && !empty($address['postal_code']) && 
+                !empty($address['country'])) {
+                
+                // Call Google Maps API via GeolocationService
+                $coordinates = $this->geoService->geocodeAddress($address);
+                
+                if (!$coordinates) {
+                    throw new Exception('Unable to geocode address. Please check the address and try again.');
+                }
+                
+                // Add geocoded coordinates to update data
+                $filtered['latitude'] = $coordinates['lat'];
+                $filtered['longitude'] = $coordinates['lng'];
+            }
         }
         
         // Call repository to perform update

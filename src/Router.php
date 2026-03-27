@@ -123,9 +123,10 @@ class Router {
                         $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler, $rateLimiter);
                         $controller = new $controllerNamespace($authService);
                     } elseif ($controllerClass === 'UserController' && $this->pdo !== null) {
-                        // UserController requires UserService with its dependencies
+                        // UserController requires UserService with its dependencies (including geocoding)
                         $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
-                        $userService = new \ReuseIT\Services\UserService($userRepo);
+                        $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
+                        $userService = new \ReuseIT\Services\UserService($userRepo, $geoService);
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($userService, $response);
                     } elseif ($controllerClass === 'ListingController' && $this->pdo !== null) {

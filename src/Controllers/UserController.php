@@ -115,6 +115,10 @@ class UserController {
             
             return Response::error('Failed to update profile', 500);
         } catch (\Exception $e) {
+            // Check for geocoding-related errors
+            if (str_contains($e->getMessage(), 'geocode')) {
+                return Response::error($e->getMessage(), 400);
+            }
             return Response::error('Server error', 500);
         }
     }
