@@ -386,4 +386,86 @@ class ListingRepository extends BaseRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
     }
+    
+    /**
+     * Search for candidate listings with distance filtering support.
+     * 
+     * Returns all active listings matching provided filters without pagination.
+     * Results include latitude and longitude needed for distance calculations.
+     * Used by the distance-based search service layer.
+     * 
+     * Filters applied:
+     * - Soft delete filtering (listings, users, photos)
+     * - Status filter (only 'active' listings)
+     * - Optional keyword search (title and description)
+     * - Optional category filter
+     * - Optional condition filter
+     * - Optional price range filtering
+     * 
+     * @param array $filters Filter criteria:
+     *   - keyword: string (optional) - searches title and description
+     *   - category_id: int (optional)
+     *   - condition: string (optional) - enum: 'new', 'like_new', 'good', 'fair'
+     *   - price_min: float (optional)
+     *   - price_max: float (optional)
+     * @param int $limit Maximum number of results (default 1000 for distance calculation)
+     * 
+     * @return array Array of candidate listings with latitude, longitude, and metadata
+     */
+    public function searchCandidatesByFilters(array $filters = [], int $limit = 1000): array {
+        // Build base query with seller details and photo count
+        $sql = "
+            SELECT l.id, l.latitude, l.longitude, l.title, l.price, l.category_id, 
+                   l.seller_id, l.status, l.created_at, COUNT(DISTINCT p.id) as photo_count
+            FROM {$this->table} l
+            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
+            WHERE 1=1
+        ";
+        
+        $params = [];
+        
+        // Apply soft-delete filtering
+        $sql .= " AND l.deleted_at IS NULL AND u.deleted_at IS NULL AND l.status = ?";
+        $params[] = 'active';
+        
+        // Apply optional keyword filter (searches title and description)
+        if (isset($filters['keyword']) && !empty($filters['keyword'])) {
+            $keyword = '%' . $filters['keyword'] . '%';
+            $sql .= " AND (l.title LIKE ? OR l.description LIKE ?)";
+            $params[] = $keyword;
+            $params[] = $keyword;
+        }
+        
+        // Apply optional category filter
+        if (isset($filters['category_id']) && $filters['category_id'] !== null) {
+            $sql .= " AND l.category_id = ?";
+            $params[] = $filters['category_id'];
+        }
+        
+        // Apply optional condition filter
+        if (isset($filters['condition']) && $filters['condition'] !== null) {
+            $sql .= " AND l.condition = ?";
+            $params[] = $filters['condition'];
+        }
+        
+        // Apply optional price range filtering
+        if (isset($filters['price_min']) && $filters['price_min'] !== null) {
+            $sql .= " AND l.price >= ?";
+            $params[] = $filters['price_min'];
+        }
+        
+        if (isset($filters['price_max']) && $filters['price_max'] !== null) {
+            $sql .= " AND l.price <= ?";
+            $params[] = $filters['price_max'];
+        }
+        
+        // Group by listing to aggregate photo count, sort by newest, apply limit
+        $sql .= " GROUP BY l.id ORDER BY l.created_at DESC LIMIT ?";
+        $params[] = $limit;
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
