@@ -609,67 +609,147 @@ class ListingController
         $stmt->execute([$count, $listingId]);
     }
 
-    /**
-     * GET /api/listings/search
-     *
-     * Search and filter listings with advanced criteria.
-     * PUBLIC endpoint - no authentication required.
-     *
-     * Query parameters:
-     * - keyword: string (searches title and description)
-     * - category_id: int
-     * - condition: string (enum: Excellent, Good, Fair, Poor)
-     * - price_min: float
-     * - price_max: float
-     * - limit: int (default 20, max 100)
-     * - offset: int (default 0)
-     *
-     * @param array $get Query parameters
-     * @param array $post POST parameters
-     * @param array $files $_FILES array
-     * @param array $params URI parameters
-     * @return string JSON response
-     */
-    public function search(array $get, array $post, array $files, array $params): string
-    {
-        try {
-            // Extract query parameters
-            $keyword = $get['keyword'] ?? '';
-            $categoryId = isset($get['category_id']) ? (int)$get['category_id'] : null;
-            $condition = $get['condition'] ?? '';
-            $priceMin = isset($get['price_min']) ? (float)$get['price_min'] : null;
-            $priceMax = isset($get['price_max']) ? (float)$get['price_max'] : null;
-            $limit = isset($get['limit']) ? (int)$get['limit'] : 20;
-            $offset = isset($get['offset']) ? (int)$get['offset'] : 0;
-
-            // Build filters array
-            $filters = [];
-            if (!empty($keyword)) {
-                $filters['keyword'] = $keyword;
-            }
-            if ($categoryId !== null) {
-                $filters['category_id'] = $categoryId;
-            }
-            if (!empty($condition)) {
-                $filters['condition'] = $condition;
-            }
-            if ($priceMin !== null) {
-                $filters['price_min'] = $priceMin;
-            }
-            if ($priceMax !== null) {
-                $filters['price_max'] = $priceMax;
-            }
-
-            // Perform search
-            $result = $this->listingService->searchListings($filters, $limit, $offset);
-
-            // Return paginated results
-            return $this->response->success($result, 200);
-        } catch (\Exception $e) {
-            $code = (int)$e->getCode() ?: 500;
-            return $this->response->error($e->getMessage(), $code);
-        }
-    }
+     /**
+      * GET /api/listings/search
+      *
+      * Search and filter listings with distance-based discovery.
+      * PUBLIC endpoint (with optional authentication for default location).
+      *
+      * Query parameters:
+      * - lat: float (optional, -90 to 90) - search center latitude
+      * - lng: float (optional, -180 to 180) - search center longitude
+      * - radius: int (optional, 0-50000 meters, default 10000) - search radius
+      * - keyword: string (optional, searches title and description)
+      * - category_id: int (optional)
+      * - condition: string (optional, enum: Excellent, Good, Fair, Poor)
+      * - price_min: float (optional)
+      * - price_max: float (optional)
+      * - limit: int (optional, default 20, max 100)
+      * - offset: int (optional, default 0)
+      *
+      * If lat/lng not provided: uses authenticated user's stored profile location (fallback).
+      * Without lat/lng and not authenticated: returns 401.
+      *
+      * @param array $get Query parameters
+      * @param array $post POST parameters
+      * @param array $files $_FILES array
+      * @param array $params URI parameters
+      * @return string JSON response
+      */
+     public function search(array $get, array $post, array $files, array $params): string
+     {
+         try {
+             // Extract and parse spatial parameters
+             $lat = isset($get['lat']) ? (float)$get['lat'] : null;
+             $lng = isset($get['lng']) ? (float)$get['lng'] : null;
+             $radius = isset($get['radius']) ? (int)$get['radius'] : 10000; // Default 10km in meters
+             
+             // Extract filter parameters
+             $keyword = $get['keyword'] ?? null;
+             $categoryId = isset($get['category_id']) ? (int)$get['category_id'] : null;
+             $condition = $get['condition'] ?? null;
+             $priceMin = isset($get['price_min']) ? (float)$get['price_min'] : null;
+             $priceMax = isset($get['price_max']) ? (float)$get['price_max'] : null;
+             
+             // Extract pagination parameters
+             $limit = isset($get['limit']) ? min((int)$get['limit'], 100) : 20; // Max 100 per page
+             $offset = isset($get['offset']) ? (int)$get['offset'] : 0;
+             
+             // Validation: Radius must be 0-50000 meters
+             if ($radius < 0 || $radius > 50000) {
+                 return Response::error('Radius must be integer between 0 and 50000 meters', 400);
+             }
+             
+             // Validation: Latitude bounds (-90 to 90)
+             if ($lat !== null && ($lat < -90 || $lat > 90)) {
+                 return Response::error('Latitude must be between -90 and 90', 400);
+             }
+             
+             // Validation: Longitude bounds (-180 to 180)
+             if ($lng !== null && ($lng < -180 || $lng > 180)) {
+                 return Response::error('Longitude must be between -180 and 180', 400);
+             }
+             
+             // Validation: Keyword length limit (1-100 chars)
+             if ($keyword !== null && strlen($keyword) > 100) {
+                 return Response::error('Keyword must be 1-100 characters', 400);
+             }
+             
+             // If no lat/lng provided and user not authenticated: return 401
+             if (($lat === null || $lng === null) && empty($_SESSION['user_id'])) {
+                 return Response::error('Authentication required when using default location', 401);
+             }
+             
+             // Build filters array - only include provided filters
+             $filters = [];
+             if ($keyword !== null && $keyword !== '') {
+                 $filters['keyword'] = $keyword;
+             }
+             if ($categoryId !== null) {
+                 $filters['category_id'] = $categoryId;
+             }
+             if ($condition !== null && $condition !== '') {
+                 $filters['condition'] = $condition;
+             }
+             if ($priceMin !== null) {
+                 $filters['price_min'] = $priceMin;
+             }
+             if ($priceMax !== null) {
+                 $filters['price_max'] = $priceMax;
+             }
+             
+             // Ensure ListingService is initialized
+             if (!$this->listingService) {
+                 return Response::error('Service not initialized', 500);
+             }
+             
+             // Call service method with error handling
+             try {
+                 $result = $this->listingService->searchWithDistance(
+                     $lat,
+                     $lng,
+                     $radius,
+                     $filters,
+                     $limit,
+                     $offset
+                 );
+             } catch (\InvalidArgumentException $e) {
+                 return Response::error($e->getMessage(), 400);
+             } catch (\Exception $e) {
+                 return Response::error('Search failed: ' . $e->getMessage(), 500);
+             }
+             
+             // Format response with distance information (Task 2)
+             // Add distance_km field for UI display on each listing
+             $formattedListings = [];
+             foreach ($result['listings'] as $listing) {
+                 // Add human-readable distance_km field (round to 1 decimal)
+                 if (isset($listing['distance_meters'])) {
+                     $listing['distance_km'] = round($listing['distance_meters'] / 1000, 1);
+                 }
+                 $formattedListings[] = $listing;
+             }
+             
+             $responseData = [
+                 'listings' => $formattedListings,
+                 'search' => [
+                     'total' => $result['total'],
+                     'limit' => $result['limit'],
+                     'offset' => $result['offset'],
+                     'radius_meters' => $result['search_radius_meters'],
+                     'center' => [
+                         'latitude' => $result['search_center']['latitude'],
+                         'longitude' => $result['search_center']['longitude']
+                     ]
+                 ]
+             ];
+             
+             return $this->response->success($responseData, 200);
+         } catch (\Exception $e) {
+             $code = (int)$e->getCode() ?: 500;
+             return $this->response->error($e->getMessage(), $code);
+         }
+     }
 
     /**
      * GET /api/listings/filter-options
