@@ -484,3 +484,41 @@ Before advancing to next phase, verify:
 **Next Phase:** Phase 4 Plan 02 (Map/Search Service) - Distance utility ready for consumption
 
 ---
+
+---
+
+## Phase 04-02 Completion Report
+
+**Status:** ✓ COMPLETE (2026-03-30T19:16:14Z)
+
+**Duration:** 2 minutes
+
+**Deliverables:**
+- ListingService.searchWithDistance() method for distance-based filtering and sorting
+- Location fallback via getUserLocation() for authenticated user profiles
+- Radius validation (0-50000m) and coordinate bounds checking
+- Haversine distance calculation integration with GeometryService
+- UserRepository injection for profile location lookups
+- Router dependency injection updated
+
+**Key Metrics:**
+- 1 task commit (no rework needed)
+- 2 files modified
+- 0 defects (plan executed exactly as written)
+- All success criteria met
+- All requirements covered: GEO-04, GEO-05, LIST-08
+
+**Deviations:** None - plan executed exactly as written
+
+**Features Implemented:**
+- Distance filtering: all candidates fetched, Haversine calculated, filtered by radius
+- Distance sorting: nearest-first using usort with distance_meters comparator
+- Pagination: applied post-sort to maintain correct ordering
+- Location fallback: authenticated user profile coordinates when not provided
+- Validation: radius (0-50k m), latitude (-90/90), longitude (-180/180)
+- Metadata: returns total within radius, search center, search radius
+
+**Next Phase:** Phase 04-03 (Controller Integration) - Distance service ready for consumption
+
+---
+
