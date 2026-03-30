@@ -205,6 +205,14 @@ Plans:
 
 **Unmapped after Phase 5:** 24 requirements (covered by later phases)
 
+### Plans
+**Status:** ✓ PLANNED (3 plans, 5 tasks total)
+
+Plans:
+- [x] 05-01-PLAN.md — Repository Data Access Layer (ConversationRepository, MessageRepository)
+- [x] 05-02-PLAN.md — Service Business Logic Layer (ChatService with message sending & validation)
+- [x] 05-03-PLAN.md — HTTP Controller & Routing Layer (ChatController endpoints, Router registration)
+
 ### Key Pitfalls to Address
 - N+1 query problem (eager-load sender/recipient user data via JOIN)
 - Polling resource exhaustion at scale (implement long-polling or WebSocket in future phase if needed)
