@@ -592,3 +592,56 @@ Before advancing to next phase, verify:
 
 ---
 
+
+---
+
+## Phase 5 Context Gathering
+
+**Status:** ✓ COMPLETE (2026-03-30)
+
+**Duration:** ~30 minutes
+
+**Decisions Locked:** 5 major areas
+
+### Areas Discussed & Locked
+
+1. **Message Display & Pagination**
+   - ✓ Newest-first ordering
+   - ✓ 20 messages per page (or fewer)
+   - ✓ Offset-based pagination
+   - ✓ Keep all messages forever
+
+2. **Unread Message Tracking**
+   - ✓ Hybrid approach (per-conversation boolean + per-message read status)
+   - ✓ Two mark-read endpoints (bulk + granular)
+   - ✓ Auto-mark on fetch
+   - ✓ Unread count in responses
+
+3. **Conversation Auto-Creation Policy**
+   - ✓ No manual conversation initiation
+   - ✓ Conversations only via bookings (Phase 6)
+   - ✓ Reuse conversations for same (listing, buyer, seller)
+   - ✓ Keep current schema (no modifications)
+
+4. **Polling Behavior & Performance**
+   - ✓ Delta endpoint: `/messages/new?since={timestamp}`
+   - ✓ Delta response: messages + unread_count + conversation_updated_at
+   - ✓ Conversation list polling: `/conversations?updated_since={timestamp}`
+   - ✓ Server-suggested interval via `X-Poll-Interval` header
+
+5. **Message Content Constraints**
+   - ✓ Plain text only (no markdown/HTML)
+   - ✓ Maximum 1000 characters
+   - ✓ Reject empty/whitespace-only messages
+   - ✓ Accept all UTF-8 characters (schema supports utf8mb4)
+
+**OpenCode's Discretion Areas:**
+- Unread count response format
+- Exact pagination metadata
+- Error message wording
+- Polling interval value
+
+**Next Phase:** `/gsd-plan-phase 05` to create executable plans
+
+---
+
