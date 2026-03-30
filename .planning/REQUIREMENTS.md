@@ -25,15 +25,15 @@
 - [ ] **LIST-05**: User can view all active listings in a sortable/filterable list
 - [ ] **LIST-06**: User can view listing details including photos, seller info, price, condition
 - [ ] **LIST-07**: User can filter listings by category, price range, condition
-- [ ] **LIST-08**: User can search listings by keyword (title, description)
+- [x] **LIST-08**: User can search listings by keyword (title, description)
 
 ### Geolocation & Map
 
 - [ ] **GEO-01**: Listing address is converted to latitude/longitude coordinates
-- [ ] **GEO-02**: User can view an interactive map showing all active listings as markers
-- [ ] **GEO-03**: User can click map markers to preview listing information
-- [ ] **GEO-04**: User can filter map view by distance radius from their location
-- [ ] **GEO-05**: User can see nearby listings sorted by distance
+- [x] **GEO-02**: User can view an interactive map showing all active listings as markers
+- [x] **GEO-03**: User can click map markers to preview listing information
+- [x] **GEO-04**: User can filter map view by distance radius from their location
+- [x] **GEO-05**: User can see nearby listings sorted by distance
 
 ### Bookings & Transactions
 
