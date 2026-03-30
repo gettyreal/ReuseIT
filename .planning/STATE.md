@@ -450,3 +450,37 @@ Before advancing to next phase, verify:
 **Phase 3 Complete:** All 3 plans (CRUD, Photos, Search/Geolocation) delivered
 
 ---
+
+## Phase 04-01 Completion Report
+
+**Status:** ✓ COMPLETE (2026-03-30T19:12:12Z)
+
+**Duration:** 1 minute
+
+**Deliverables:**
+- GeometryService with Haversine distance calculation
+- ListingRepository.searchCandidatesByFilters() method for distance-based search
+- Multi-filter support: keyword, category, condition, price_min, price_max
+- Soft-delete filtering across listings, users, and photos
+- Prepared statement discipline (SQL injection safe)
+
+**Key Metrics:**
+- 2 task commits (no rework needed)
+- 2 files modified (1 created, 1 modified)
+- 0 defects (plan executed exactly as written)
+- All success criteria met
+- All requirements covered: GEO-04, GEO-05
+
+**Deviations:** None - plan executed exactly as written
+
+**Features Implemented:**
+- Haversine formula with EARTH_RADIUS_KM = 6371
+- Verified: Toronto-Montreal = 504.26 km (accurate)
+- Repository returns up to 1000 candidates with latitude/longitude
+- All filter combinations use AND logic
+- Soft-delete filtering on all related tables
+- ORDER BY created_at DESC (newest first)
+
+**Next Phase:** Phase 4 Plan 02 (Map/Search Service) - Distance utility ready for consumption
+
+---
