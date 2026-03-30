@@ -1,9 +1,52 @@
-# API Endpoints
+# API Endpoints ReuseIT
 
-## Health Check
-**GET** `/api/health`
+Documentazione aggiornata agli endpoint realmente registrati nel router (`src/Router.php`).
 
-Verifica stato del server.
+## Regole generali
+
+- Base URL locale: `http://localhost:8000`
+- Formato risposta standard:
+  - successo: `{ "success": true, "data": ... }`
+  - errore: `{ "success": false, "error": "..." }`
+  - validazione: `{ "success": false, "errors": [{"field":"...","message":"..."}] }`
+- Autenticazione: sessione PHP (cookie). Per endpoint protetti usa `-b cookies.txt` e per login usa `-c cookies.txt`.
+
+## Panoramica endpoint
+
+| Metodo | Endpoint | Auth | Descrizione |
+|---|---|---|---|
+| GET | `/api/health` | No | Health check server |
+| POST | `/api/auth/register` | No | Registrazione utente |
+| POST | `/api/auth/login` | No | Login utente |
+| POST | `/api/auth/logout` | No | Logout sessione corrente |
+| GET | `/api/auth/me` | Si | Profilo utente autenticato |
+| GET | `/api/users/:id` | No | Profilo pubblico utente |
+| PATCH | `/api/users/:id/profile` | Si | Aggiorna proprio profilo |
+| GET | `/api/listings` | No | Lista annunci con filtri base |
+| GET | `/api/listings/search` | No* | Ricerca con distanza e filtri |
+| GET | `/api/listings/filter-options` | No | Opzioni filtri per UI |
+| GET | `/api/listings/:id` | No | Dettaglio annuncio |
+| POST | `/api/listings` | Si | Crea annuncio |
+| PATCH | `/api/listings/:id` | Si | Aggiorna annuncio (owner) |
+| DELETE | `/api/listings/:id` | Si | Elimina annuncio (owner) |
+| POST | `/api/listings/:id/photos` | Si | Upload foto annuncio (owner) |
+| POST | `/api/users/:id/avatar` | Si | Upload avatar utente |
+| GET | `/api/conversations` | Si | Lista conversazioni utente |
+| GET | `/api/conversations/:id/messages` | Si | Storico messaggi conversazione |
+| GET | `/api/conversations/:id/messages/new` | Si | Nuovi messaggi da timestamp |
+| POST | `/api/conversations/:id/messages` | Si | Invia messaggio |
+| PATCH | `/api/conversations/:id/mark-read` | Si | Segna conversazione come letta |
+| PATCH | `/api/messages/:id/mark-read` | Si | Segna messaggio come letto |
+
+`*` `/api/listings/search` e pubblico, ma se non passi `lat` e `lng` richiede utente autenticato (usa la posizione profilo).
+
+---
+
+## Health
+
+### GET `/api/health`
+
+Controllo stato server (non richiede DB).
 
 ```bash
 curl http://localhost:8000/api/health
@@ -11,12 +54,21 @@ curl http://localhost:8000/api/health
 
 ---
 
-## Autenticazione & Utenti
+## Autenticazione
 
-### Registrazione
-**POST** `/api/auth/register`
+### POST `/api/auth/register`
 
-Crea nuovo utente.
+Registra un nuovo utente.
+
+Body JSON richiesto:
+- `email`
+- `password` (min 8)
+- `first_name`
+- `last_name`
+- `address` oggetto con: `street`, `city`, `province`, `postal_code`, `country`
+
+Opzionale:
+- `coordinates` con `lat`, `lng`
 
 ```bash
 curl -X POST http://localhost:8000/api/auth/register \
@@ -24,129 +76,82 @@ curl -X POST http://localhost:8000/api/auth/register \
   -d '{
     "email": "user@example.com",
     "password": "password123",
-    "first_name": "John",
-    "last_name": "Doe",
+    "first_name": "Mario",
+    "last_name": "Rossi",
     "address": {
       "street": "Via Roma 1",
       "city": "Milano",
       "province": "MI",
       "postal_code": "20100",
       "country": "Italy"
-    },
-    "coordinates": {
-      "lat": 45.4654,
-      "lng": 9.1859
     }
   }'
 ```
 
-**Note**: 
-- `coordinates` è opzionale. Se non fornito, il sistema calcolerà automaticamente le coordinate tramite Google API
-- Per testare ora senza Google API configurato, fornisci `coordinates` manualmente
+### POST `/api/auth/login`
 
----
+Login utente e creazione sessione.
 
-### Login
-**POST** `/api/auth/login`
-
-Autentica utente (crea sessione).
+Body JSON:
+- `email`
+- `password`
 
 ```bash
 curl -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -c cookies.txt \
-  -d '{
-    "email": "user@example.com",
-    "password": "password123"
-  }'
+  -d '{"email":"user@example.com","password":"password123"}'
 ```
 
----
+### POST `/api/auth/logout`
 
-### Logout
-**POST** `/api/auth/logout`
-
-Termina sessione. **Richiede sessione attiva.**
+Logout sessione corrente.
 
 ```bash
-curl -X POST http://localhost:8000/api/auth/logout \
-  -b cookies.txt
+curl -X POST http://localhost:8000/api/auth/logout -b cookies.txt
 ```
 
----
+### GET `/api/auth/me` (protetto)
 
-### Profilo Personale
-**GET** `/api/auth/me`
-
-Recupera profilo utente autenticato. **Richiede sessione attiva.**
+Ritorna il profilo dell'utente autenticato.
 
 ```bash
-curl http://localhost:8000/api/auth/me \
-  -b cookies.txt
+curl http://localhost:8000/api/auth/me -b cookies.txt
 ```
 
 ---
 
-### Profilo Pubblico Utente
-**GET** `/api/users/:id`
+## Utenti
 
-Visualizza profilo pubblico di un utente.
+### GET `/api/users/:id`
 
-**Parametri URL:**
-- `:id` (required) — ID utente
+Profilo pubblico utente.
 
 ```bash
 curl http://localhost:8000/api/users/1
 ```
 
----
+### PATCH `/api/users/:id/profile` (protetto)
 
-### Aggiorna Profilo Personale
-**PATCH** `/api/users/:id/profile`
+Aggiorna profilo; solo il proprio profilo.
 
-Aggiorna il proprio profilo. **Richiede sessione attiva. Puoi modificare solo il tuo profilo.**
-
-**Parametri URL:**
-- `:id` (required) — ID utente
-
-**Parametri Body (tutti opzionali):**
-- `first_name` — Nome (max 100 caratteri)
-- `last_name` — Cognome (max 100 caratteri)
-- `bio` — Biografia (max 255 caratteri)
-- `address_street` — Via
-- `address_city` — Città
-- `address_province` — Provincia
-- `address_postal_code` — CAP
-- `address_country` — Paese
+Campi aggiornabili (tutti opzionali):
+- `first_name`, `last_name`, `bio`
+- `address_street`, `address_city`, `address_province`, `address_postal_code`, `address_country`
 
 ```bash
 curl -X PATCH http://localhost:8000/api/users/1/profile \
   -H "Content-Type: application/json" \
   -b cookies.txt \
-  -d '{
-    "first_name": "Jane",
-    "last_name": "Rossi",
-    "bio": "Mi piace condividere",
-    "address_street": "Via Verdi 10",
-    "address_city": "Roma",
-    "address_province": "RM",
-    "address_postal_code": "00100",
-    "address_country": "Italy"
-  }'
+  -d '{"bio":"Profilo aggiornato"}'
 ```
 
----
+### POST `/api/users/:id/avatar` (protetto)
 
-### Carica Avatar Utente
-**POST** `/api/users/:id/avatar`
+Upload avatar; solo il proprio avatar.
 
-Carica immagine avatar per l'utente. **Richiede sessione attiva. Puoi caricare solo il tuo avatar.**
-
-**Parametri URL:**
-- `:id` (required) — ID utente
-
-**Parametri Body (multipart/form-data):**
-- `avatar` (required) — File immagine (JPEG/PNG/WebP, max 5MB)
+Body multipart/form-data:
+- `avatar` file immagine
 
 ```bash
 curl -X POST http://localhost:8000/api/users/1/avatar \
@@ -156,189 +161,208 @@ curl -X POST http://localhost:8000/api/users/1/avatar \
 
 ---
 
-## Annunci (Listings)
+## Listings
 
-### Crea Annuncio
-**POST** `/api/listings`
+### GET `/api/listings`
 
-Crea nuovo annuncio. **Richiede sessione attiva.**
+Lista annunci con filtri base e paginazione.
 
-**Parametri Body:**
-- `title` (required) — Titolo annuncio (max 255 caratteri)
-- `description` (required) — Descrizione (max 5000 caratteri)
-- `category_id` (required) — ID categoria
-- `price` (required) — Prezzo in euro (es: 650.00)
-- `condition` (required) — Condizione (Excellent, Good, Fair, Poor)
-- `address` (required) — Indirizzo come oggetto:
-  - `street` — Via
-  - `city` — Città
-  - `province` — Provincia
-  - `postal_code` — CAP
-  - `country` — Paese
-- `brand` (optional) — Marca
-- `model` (optional) — Modello
-- `year` (optional) — Anno di produzione
-- `accessories` (optional) — Array di accessori inclusi (es: ["charger", "box"])
+Query params opzionali:
+- `limit` (default 20, max 100)
+- `offset` (default 0)
+- `category_id`
+- `status`
+- `price_min`
+- `price_max`
+
+```bash
+curl "http://localhost:8000/api/listings?limit=20&offset=0"
+```
+
+### GET `/api/listings/:id`
+
+Dettaglio annuncio.
+
+```bash
+curl http://localhost:8000/api/listings/42
+```
+
+### POST `/api/listings` (protetto)
+
+Crea annuncio.
+
+Body JSON tipico:
+- `title`, `description`, `category_id`, `price`, `condition`, `address`
+- opzionali: `brand`, `model`, `year`, `accessories`
 
 ```bash
 curl -X POST http://localhost:8000/api/listings \
   -H "Content-Type: application/json" \
   -b cookies.txt \
   -d '{
-    "title": "iPhone 12 Pro",
-    "description": "Perfetto stato, batteria al 95%",
-    "category_id": 1,
-    "price": 650.00,
-    "condition": "Excellent",
+    "title":"iPhone 12 Pro",
+    "description":"Ottimo stato",
+    "category_id":1,
+    "price":650,
+    "condition":"Excellent",
     "address": {
-      "street": "Via Roma 123",
-      "city": "Milano",
-      "province": "MI",
-      "postal_code": "20100",
-      "country": "Italy"
-    },
-    "brand": "Apple",
-    "model": "iPhone 12 Pro",
-    "year": 2021,
-    "accessories": ["charger", "box"]
+      "street":"Via Roma 10",
+      "city":"Milano",
+      "province":"MI",
+      "postal_code":"20100",
+      "country":"Italy"
+    }
   }'
 ```
 
----
+### PATCH `/api/listings/:id` (protetto)
 
-### Lista Annunci
-**GET** `/api/listings`
-
-Elenca tutti gli annunci attivi con filtri e paginazione.
-
-**Parametri Query:**
-- `limit` (optional, default 20, max 100) — Numero annunci per pagina
-- `offset` (optional, default 0) — Offset paginazione
-- `category_id` (optional) — Filtra per ID categoria
-- `status` (optional) — Filtra per stato
-- `price_min` (optional) — Prezzo minimo
-- `price_max` (optional) — Prezzo massimo
-
-```bash
-curl "http://localhost:8000/api/listings?limit=20&offset=0&category_id=1&price_min=100&price_max=1000"
-```
-
----
-
-### Dettagli Annuncio
-**GET** `/api/listings/:id`
-
-Visualizza dettagli completi di un annuncio.
-
-**Parametri URL:**
-- `:id` (required) — ID annuncio
-
-```bash
-curl http://localhost:8000/api/listings/42
-```
-
----
-
-### Aggiorna Annuncio
-**PATCH** `/api/listings/:id`
-
-Aggiorna un annuncio. **Richiede sessione attiva. Solo il proprietario può modificare.**
-
-**Parametri URL:**
-- `:id` (required) — ID annuncio
-
-**Parametri Body (tutti opzionali):**
-- `title` — Titolo
-- `description` — Descrizione
-- `category_id` — ID categoria
-- `price` — Prezzo
-- `condition` — Condizione
-- `address` — Indirizzo (oggetto con street, city, province, postal_code, country)
-- `brand` — Marca
-- `model` — Modello
-- `year` — Anno
-- `accessories` — Array di accessori
+Aggiorna annuncio; solo owner.
 
 ```bash
 curl -X PATCH http://localhost:8000/api/listings/42 \
   -H "Content-Type: application/json" \
   -b cookies.txt \
-  -d '{
-    "title": "iPhone 12 Pro (RIDOTTO)",
-    "price": 600.00,
-    "condition": "Good"
-  }'
+  -d '{"price":599.99}'
 ```
 
----
+### DELETE `/api/listings/:id` (protetto)
 
-### Elimina Annuncio
-**DELETE** `/api/listings/:id`
-
-Elimina (soft delete) un annuncio. **Richiede sessione attiva. Solo il proprietario può eliminare.**
-
-**Parametri URL:**
-- `:id` (required) — ID annuncio
+Soft delete annuncio; solo owner.
 
 ```bash
-curl -X DELETE http://localhost:8000/api/listings/42 \
-  -b cookies.txt
+curl -X DELETE http://localhost:8000/api/listings/42 -b cookies.txt
 ```
 
----
+### POST `/api/listings/:id/photos` (protetto)
 
-### Carica Foto per Annuncio
-**POST** `/api/listings/:id/photos`
+Upload foto annuncio; solo owner. Limite max 10 foto per annuncio.
 
-Carica foto per un annuncio (max 10 foto). **Richiede sessione attiva. Solo il proprietario può caricare.**
-
-**Parametri URL:**
-- `:id` (required) — ID annuncio
-
-**Parametri Body (multipart/form-data):**
-- `photos` (required) — Array di file immagini (JPEG/PNG/WebP, max 5MB ciascuna)
+Body multipart/form-data:
+- `photos` (puoi passare piu file)
 
 ```bash
 curl -X POST http://localhost:8000/api/listings/42/photos \
   -b cookies.txt \
   -F "photos=@/path/to/photo1.jpg" \
-  -F "photos=@/path/to/photo2.jpg" \
-  -F "photos=@/path/to/photo3.jpg"
+  -F "photos=@/path/to/photo2.jpg"
 ```
 
 ---
 
-## Ricerca & Scoperta
+## Ricerca listings
 
-### Ricerca Annunci
-**GET** `/api/listings/search`
+### GET `/api/listings/search`
 
-Ricerca avanzata di annunci con filtri multi-criteri.
+Ricerca avanzata con distanza.
 
-**Parametri Query:**
-- `keyword` (optional) — Ricerca per titolo/descrizione
-- `category_id` (optional) — Filtra per categoria
-- `condition` (optional) — Filtra per condizione (Excellent, Good, Fair, Poor)
-- `price_min` (optional) — Prezzo minimo
-- `price_max` (optional) — Prezzo massimo
-- `limit` (optional, default 20, max 100) — Numero risultati
-- `offset` (optional, default 0) — Offset paginazione
+Query params opzionali:
+- posizione: `lat`, `lng`
+- raggio: `radius` (0-50000 metri, default 10000)
+- filtri: `keyword`, `category_id`, `condition`, `price_min`, `price_max`
+- paginazione: `limit` (max 100), `offset`
+
+Nota comportamento auth:
+- se passi `lat` + `lng` non serve autenticazione
+- se non passi `lat`/`lng`, viene usata la posizione utente autenticato
+- senza posizione e senza login ritorna `401`
 
 ```bash
-curl "http://localhost:8000/api/listings/search?keyword=iPhone&condition=Excellent&price_min=500&price_max=800&limit=20&offset=0"
+curl "http://localhost:8000/api/listings/search?lat=45.46&lng=9.18&radius=10000&keyword=iphone"
 ```
 
----
+### GET `/api/listings/filter-options`
 
-### Opzioni Filtri
-**GET** `/api/listings/filter-options`
-
-Recupera valori disponibili per i filtri della UI (categorie, condizioni, range prezzi).
-
-**Parametri Query:** Nessuno
+Valori disponibili per i filtri UI (categorie, condizioni, range prezzi).
 
 ```bash
 curl http://localhost:8000/api/listings/filter-options
 ```
 
 ---
+
+## Chat
+
+Tutti gli endpoint chat sono protetti (richiedono sessione valida).
+
+### GET `/api/conversations`
+
+Lista conversazioni utente.
+
+Query params opzionali:
+- `limit` (1-50, default 20)
+- `offset` (default 0)
+
+```bash
+curl "http://localhost:8000/api/conversations?limit=20&offset=0" -b cookies.txt
+```
+
+### GET `/api/conversations/:id/messages`
+
+Storico messaggi conversazione.
+
+Query params opzionali:
+- `limit` (1-50, default 20)
+- `offset` (default 0)
+
+Header risposta: `X-Poll-Interval: 3000`
+
+```bash
+curl "http://localhost:8000/api/conversations/1/messages?limit=20&offset=0" -b cookies.txt
+```
+
+### GET `/api/conversations/:id/messages/new`
+
+Delta messaggi da timestamp (`since` obbligatorio).
+
+Query params richiesti:
+- `since` (formato data valido: `Y-m-d H:i:s` o ISO 8601)
+
+Header risposta: `X-Poll-Interval: 3000`
+
+```bash
+curl "http://localhost:8000/api/conversations/1/messages/new?since=2026-03-30T10:00:00Z" -b cookies.txt
+```
+
+### POST `/api/conversations/:id/messages`
+
+Invia messaggio in conversazione.
+
+Body JSON:
+- `content` (string, obbligatorio)
+
+```bash
+curl -X POST http://localhost:8000/api/conversations/1/messages \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{"content":"Ciao! E ancora disponibile?"}'
+```
+
+### PATCH `/api/conversations/:id/mark-read`
+
+Segna come letta una conversazione per l'utente autenticato.
+
+```bash
+curl -X PATCH http://localhost:8000/api/conversations/1/mark-read -b cookies.txt
+```
+
+### PATCH `/api/messages/:id/mark-read`
+
+Segna come letto un singolo messaggio.
+
+```bash
+curl -X PATCH http://localhost:8000/api/messages/10/mark-read -b cookies.txt
+```
+
+---
+
+## Errori HTTP comuni
+
+- `400` parametri invalidi / validazione fallita
+- `401` non autenticato
+- `403` autenticato ma non autorizzato
+- `404` risorsa non trovata
+- `409` conflitto (es. limiti upload foto)
+- `422` errori validazione semantica
+- `429` troppi tentativi login
+- `500` errore server
