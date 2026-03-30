@@ -60,6 +60,14 @@ class Router {
         $this->routes['GET']['/api/users/:id'] = ['UserController', 'show'];
         $this->routes['PATCH']['/api/users/:id/profile'] = ['UserController', 'update'];
         
+        // Chat endpoints (Phase 5)
+        $this->routes['GET']['/api/conversations'] = ['ChatController', 'getConversations'];
+        $this->routes['GET']['/api/conversations/:id/messages'] = ['ChatController', 'getConversationMessages'];
+        $this->routes['GET']['/api/conversations/:id/messages/new'] = ['ChatController', 'getNewMessages'];
+        $this->routes['POST']['/api/conversations/:id/messages'] = ['ChatController', 'sendMessage'];
+        $this->routes['PATCH']['/api/conversations/:id/mark-read'] = ['ChatController', 'markConversationRead'];
+        $this->routes['PATCH']['/api/messages/:id/mark-read'] = ['ChatController', 'markMessageRead'];
+        
         // Health check (Phase 1)
         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
     }
@@ -89,6 +97,12 @@ class Router {
             'ListingController:delete',
             'ListingController:uploadPhotos',
             'ListingController:uploadAvatar',
+            'ChatController:getConversations',
+            'ChatController:getConversationMessages',
+            'ChatController:getNewMessages',
+            'ChatController:sendMessage',
+            'ChatController:markConversationRead',
+            'ChatController:markMessageRead',
         ];
         
         // Iterate through registered routes for this method
@@ -139,6 +153,13 @@ class Router {
                         $photoUploadService = new \ReuseIT\Services\PhotoUploadService($this->pdo, $photoRepo);
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($photoUploadService, $photoRepo, $this->pdo, $response, $listingService, $listingRepo);
+                    } elseif ($controllerClass === 'ChatController' && $this->pdo !== null) {
+                        // ChatController requires ChatService with its dependencies
+                        $conversationRepo = new \ReuseIT\Repositories\ConversationRepository($this->pdo);
+                        $messageRepo = new \ReuseIT\Repositories\MessageRepository($this->pdo);
+                        $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $chatService = new \ReuseIT\Services\ChatService($conversationRepo, $messageRepo, $userRepo);
+                        $controller = new $controllerNamespace($chatService);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
