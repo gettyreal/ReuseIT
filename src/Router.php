@@ -134,7 +134,8 @@ class Router {
                         $listingRepo = new \ReuseIT\Repositories\ListingRepository($this->pdo);
                         $photoRepo = new \ReuseIT\Repositories\ListingPhotoRepository($this->pdo);
                         $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
-                        $listingService = new \ReuseIT\Services\ListingService($this->pdo, $listingRepo, $photoRepo, $geoService);
+                        $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $listingService = new \ReuseIT\Services\ListingService($this->pdo, $listingRepo, $photoRepo, $geoService, $userRepo);
                         $photoUploadService = new \ReuseIT\Services\PhotoUploadService($this->pdo, $photoRepo);
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($photoUploadService, $photoRepo, $this->pdo, $response, $listingService, $listingRepo);

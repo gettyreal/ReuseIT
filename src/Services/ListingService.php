@@ -4,7 +4,10 @@ namespace ReuseIT\Services;
 use PDO;
 use ReuseIT\Repositories\ListingRepository;
 use ReuseIT\Repositories\ListingPhotoRepository;
+use ReuseIT\Repositories\UserRepository;
+use ReuseIT\Utils\GeometryService;
 use Exception;
+use InvalidArgumentException;
 
 /**
  * ListingService
@@ -19,6 +22,7 @@ class ListingService {
     private ListingRepository $listingRepo;
     private ListingPhotoRepository $photoRepo;
     private GeolocationService $geolocation;
+    private UserRepository $userRepo;
     
     /**
      * Initialize ListingService with dependencies.
@@ -27,17 +31,20 @@ class ListingService {
      * @param ListingRepository $listingRepo Listing data access layer
      * @param ListingPhotoRepository $photoRepo Photo data access layer
      * @param GeolocationService $geolocation Address geocoding service
+     * @param UserRepository $userRepo User data access layer
      */
     public function __construct(
         PDO $pdo,
         ListingRepository $listingRepo,
         ListingPhotoRepository $photoRepo,
-        GeolocationService $geolocation
+        GeolocationService $geolocation,
+        UserRepository $userRepo
     ) {
         $this->pdo = $pdo;
         $this->listingRepo = $listingRepo;
         $this->photoRepo = $photoRepo;
         $this->geolocation = $geolocation;
+        $this->userRepo = $userRepo;
     }
     
     /**
@@ -594,27 +601,160 @@ class ListingService {
     
     /**
      * Format address components into readable string.
+      * 
+      * @param array $address Address components
+      * @return string Formatted address string
+      */
+     private function formatAddress(array $address): string {
+         $parts = [];
+         if (!empty($address['street'])) {
+             $parts[] = $address['street'];
+         }
+         if (!empty($address['city'])) {
+             $parts[] = $address['city'];
+         }
+         if (!empty($address['province'])) {
+             $parts[] = $address['province'];
+         }
+         if (!empty($address['postal_code'])) {
+             $parts[] = $address['postal_code'];
+         }
+         if (!empty($address['country'])) {
+             $parts[] = $address['country'];
+         }
+         return implode(', ', $parts);
+     }
+    
+    /**
+     * Search listings within a radius of given coordinates, sorted by distance.
      * 
-     * @param array $address Address components
-     * @return string Formatted address string
+     * Implements distance-based filtering and sorting using Haversine formula.
+     * If user location (lat/lng) not provided, uses user's stored profile location.
+     * 
+     * @param float|null $userLat User's search latitude (nullable)
+     * @param float|null $userLng User's search longitude (nullable)
+     * @param int $radiusMeters Search radius in meters (0-50000, validated)
+     * @param array $filters Optional filters: keyword, category_id, condition, price_min, price_max
+     * @param int $limit Results per page (default 20)
+     * @param int $offset Results to skip (default 0)
+     * @return array Array with keys: listings, total, limit, offset, search_radius_meters, search_center
+     * @throws InvalidArgumentException On validation errors
+     * @throws Exception On database or business logic errors
      */
-    private function formatAddress(array $address): string {
-        $parts = [];
-        if (!empty($address['street'])) {
-            $parts[] = $address['street'];
+    public function searchWithDistance(
+        ?float $userLat,
+        ?float $userLng,
+        int $radiusMeters,
+        array $filters = [],
+        int $limit = 20,
+        int $offset = 0
+    ): array {
+        // Step 1: Validate radius
+        if ($radiusMeters < 0 || $radiusMeters > 50000) {
+            throw new InvalidArgumentException('Radius must be between 0 and 50000 meters');
         }
-        if (!empty($address['city'])) {
-            $parts[] = $address['city'];
+        
+        // Step 2: Get user location (fallback if not provided)
+        if ($userLat === null || $userLng === null) {
+            $fallbackLocation = $this->getUserLocation();
+            $userLat = $fallbackLocation['latitude'];
+            $userLng = $fallbackLocation['longitude'];
         }
-        if (!empty($address['province'])) {
-            $parts[] = $address['province'];
+        
+        // Step 3: Validate coordinates
+        if ($userLat < -90 || $userLat > 90) {
+            throw new InvalidArgumentException('Latitude must be between -90 and 90');
         }
-        if (!empty($address['postal_code'])) {
-            $parts[] = $address['postal_code'];
+        if ($userLng < -180 || $userLng > 180) {
+            throw new InvalidArgumentException('Longitude must be between -180 and 180');
         }
-        if (!empty($address['country'])) {
-            $parts[] = $address['country'];
+        
+        // Step 4: Get candidates (up to 1000)
+        $candidates = $this->listingRepo->searchCandidatesByFilters($filters, 1000);
+        
+        // Step 5: Apply distance filtering and calculation
+        $filtered = [];
+        foreach ($candidates as $listing) {
+            // Skip listings with missing coordinates
+            if (empty($listing['latitude']) || empty($listing['longitude'])) {
+                continue;
+            }
+            
+            try {
+                // Calculate distance using Haversine formula
+                $distanceKm = GeometryService::haversineDistance(
+                    $userLat,
+                    $userLng,
+                    (float)$listing['latitude'],
+                    (float)$listing['longitude']
+                );
+                
+                // Convert km to meters
+                $distanceMeters = $distanceKm * 1000;
+                
+                // Add distance to listing data
+                $listing['distance_meters'] = $distanceMeters;
+                
+                // Only include listings within radius
+                if ($distanceMeters <= $radiusMeters) {
+                    $filtered[] = $listing;
+                }
+            } catch (Exception $e) {
+                // Skip listing if Haversine calculation fails
+                continue;
+            }
         }
-        return implode(', ', $parts);
+        
+        // Step 6: Sort by distance (nearest first)
+        usort($filtered, fn($a, $b) => $a['distance_meters'] <=> $b['distance_meters']);
+        
+        // Step 7: Apply pagination
+        $paginated = array_slice($filtered, $offset, $limit);
+        
+        // Step 8: Return result with metadata
+        return [
+            'listings' => $paginated,
+            'total' => count($filtered),
+            'limit' => $limit,
+            'offset' => $offset,
+            'search_radius_meters' => $radiusMeters,
+            'search_center' => [
+                'latitude' => $userLat,
+                'longitude' => $userLng
+            ]
+        ];
+    }
+    
+    /**
+     * Get user's location from profile, or throw exception if not set.
+     * 
+     * Uses session user ID to fetch stored location coordinates.
+     * Throws exception if user not authenticated or location not configured.
+     * 
+     * @return array Array with keys: latitude, longitude
+     * @throws InvalidArgumentException On auth failure or missing location
+     */
+    private function getUserLocation(): array {
+        // Get current user ID from session
+        $userId = $_SESSION['user_id'] ?? null;
+        if ($userId === null) {
+            throw new InvalidArgumentException('Authentication required for default location search');
+        }
+        
+        // Fetch user record
+        $user = $this->userRepo->find($userId);
+        if (!$user) {
+            throw new InvalidArgumentException('User not found');
+        }
+        
+        // Check user location is set
+        if (empty($user['latitude']) || empty($user['longitude'])) {
+            throw new InvalidArgumentException('User location not set in profile');
+        }
+        
+        return [
+            'latitude' => (float)$user['latitude'],
+            'longitude' => (float)$user['longitude']
+        ];
     }
 }
