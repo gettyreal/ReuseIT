@@ -254,6 +254,14 @@ Plans:
 
 **Unmapped after Phase 6:** 15 requirements (covered by later phases)
 
+### Plans
+**Status:** ✓ PLANNED (3 plans, 9 tasks total)
+
+Plans:
+- [ ] 06-01-PLAN.md — Booking data foundation (schema migration, booking repository, timeline + pickup repositories)
+- [ ] 06-02-PLAN.md — Booking state machine service (atomic booking+chat, transitions, scheduling, expiry notifications)
+- [ ] 06-03-PLAN.md — Booking API integration (controller endpoints, router wiring, role-specific dashboard payloads)
+
 ### Key Pitfalls to Address
 - Transaction atomicity (booking + conversation creation must be atomic; wrap in BEGIN...COMMIT)
 - Race condition prevention (pessimistic locking with SELECT...FOR UPDATE; unique constraint on active bookings)
