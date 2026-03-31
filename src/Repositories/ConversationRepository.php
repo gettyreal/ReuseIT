@@ -236,4 +236,45 @@ class ConversationRepository extends BaseRepository {
     public function update(int $id, array $data): bool {
         return parent::update($id, $data);
     }
+
+    /**
+     * Create or reuse conversation for booking linkage.
+     *
+     * Idempotent on UNIQUE(listing_id, buyer_id, seller_id).
+     */
+    public function createOrTouchForBooking(int $listingId, int $buyerId, int $sellerId): int {
+        $sql = "
+            INSERT INTO {$this->table} (listing_id, buyer_id, seller_id, created_at, updated_at)
+            VALUES (?, ?, ?, NOW(), NOW())
+            ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$listingId, $buyerId, $sellerId]);
+
+        $id = (int) $this->pdo->lastInsertId();
+        if ($id > 0) {
+            return $id;
+        }
+
+        $lookupSql = "
+            SELECT id
+            FROM {$this->table}
+            WHERE listing_id = ?
+              AND buyer_id = ?
+              AND seller_id = ?
+              AND deleted_at IS NULL
+            LIMIT 1
+        ";
+
+        $lookupStmt = $this->pdo->prepare($lookupSql);
+        $lookupStmt->execute([$listingId, $buyerId, $sellerId]);
+
+        $existingId = (int) $lookupStmt->fetchColumn();
+        if ($existingId <= 0) {
+            throw new \RuntimeException('Failed to resolve conversation for booking linkage');
+        }
+
+        return $existingId;
+    }
 }
