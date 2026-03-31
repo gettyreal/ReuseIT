@@ -39,12 +39,12 @@
 
 - [ ] **BOOK-01**: User can book/reserve a listing for in-person pickup
 - [ ] **BOOK-02**: Booking creates a conversation between buyer and seller
-- [ ] **BOOK-03**: User can view their bookings (separate buyer and seller views)
-- [ ] **BOOK-04**: Booking status workflow: pending → confirmed → completed / cancelled
+- [x] **BOOK-03**: User can view their bookings (separate buyer and seller views)
+- [x] **BOOK-04**: Booking status workflow: pending → confirmed → completed / cancelled
 - [ ] **BOOK-05**: Seller can confirm a pending booking
 - [ ] **BOOK-06**: User can schedule pickup date/time for a confirmed booking
 - [ ] **BOOK-07**: User can mark a booking as completed after pickup
-- [ ] **BOOK-08**: User can cancel a booking (if not completed)
+- [x] **BOOK-08**: User can cancel a booking (if not completed)
 
 ### Chat & Messaging
 

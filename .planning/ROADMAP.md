@@ -255,10 +255,10 @@ Plans:
 **Unmapped after Phase 6:** 15 requirements (covered by later phases)
 
 ### Plans
-**Status:** ✓ PLANNED (3 plans, 9 tasks total)
+**Status:** IN PROGRESS (1/3 complete)
 
 Plans:
-- [ ] 06-01-PLAN.md — Booking data foundation (schema migration, booking repository, timeline + pickup repositories)
+- [x] 06-01-PLAN.md — Booking data foundation (schema migration, booking repository, timeline + pickup repositories)
 - [ ] 06-02-PLAN.md — Booking state machine service (atomic booking+chat, transitions, scheduling, expiry notifications)
 - [ ] 06-03-PLAN.md — Booking API integration (controller endpoints, router wiring, role-specific dashboard payloads)
 
