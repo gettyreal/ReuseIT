@@ -107,8 +107,9 @@ class BookingController {
 
         $events = $this->bookingEventRepository->findByBookingId($bookingId);
         $activePickupWindow = $this->pickupWindowRepository->findLatestAcceptedByBookingId($bookingId);
+        $latestOpenProposal = $this->pickupWindowRepository->findLatestOpenByBookingId($bookingId);
         $role = ((int) ($booking['seller_id'] ?? 0) === $userId) ? 'seller' : 'buyer';
-        $booking = $this->enrichBookingRow($booking, $role, $userId, $activePickupWindow);
+        $booking = $this->enrichBookingRow($booking, $role, $userId, $activePickupWindow, $latestOpenProposal);
         $timeline = $this->formatTimelineEvents($events);
 
         return Response::success([
@@ -284,7 +285,7 @@ class BookingController {
     }
 
     private function enrichDashboardBuckets(array $result, string $role, int $userId): array {
-        $activePickupByBookingId = $this->getActivePickupMapFromBuckets($result);
+        [$activePickupByBookingId, $latestOpenProposalByBookingId] = $this->getPickupStateMapsFromBuckets($result);
 
         foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $bucket) {
             $rows = $result[$bucket] ?? [];
@@ -293,7 +294,8 @@ class BookingController {
             foreach ($rows as $row) {
                 $bookingId = (int) ($row['id'] ?? 0);
                 $activePickupWindow = $activePickupByBookingId[$bookingId] ?? null;
-                $enrichedRows[] = $this->enrichBookingRow($row, $role, $userId, $activePickupWindow);
+                $latestOpenProposal = $latestOpenProposalByBookingId[$bookingId] ?? null;
+                $enrichedRows[] = $this->enrichBookingRow($row, $role, $userId, $activePickupWindow, $latestOpenProposal);
             }
 
             $result[$bucket] = $enrichedRows;
@@ -302,7 +304,7 @@ class BookingController {
         return $result;
     }
 
-    private function enrichBookingRow(array $booking, string $role, int $userId, ?array $activePickupWindow): array {
+    private function enrichBookingRow(array $booking, string $role, int $userId, ?array $activePickupWindow, ?array $latestOpenProposal): array {
         $status = (string) ($booking['booking_status'] ?? '');
         $isSeller = $role === 'seller';
         $isBuyer = $role === 'buyer';
@@ -325,12 +327,12 @@ class BookingController {
         $booking['respond_by'] = $isSeller && $status === 'pending' ? $respondBy : null;
         $booking['seconds_until_expiry'] = $isSeller && $status === 'pending' ? $secondsUntilExpiry : null;
         $booking['is_expired'] = $isSeller && $status === 'pending' ? $isExpired : false;
-        $booking['next_actions'] = $this->computeNextActions($booking, $isBuyer, $isSeller, $activePickupWindow);
+        $booking['next_actions'] = $this->computeNextActions($booking, $userId, $isBuyer, $isSeller, $activePickupWindow, $latestOpenProposal);
 
         return $booking;
     }
 
-    private function computeNextActions(array $booking, bool $isBuyer, bool $isSeller, ?array $activePickupWindow): array {
+    private function computeNextActions(array $booking, int $userId, bool $isBuyer, bool $isSeller, ?array $activePickupWindow, ?array $latestOpenProposal): array {
         $status = (string) ($booking['booking_status'] ?? '');
         $actions = [];
 
@@ -343,12 +345,18 @@ class BookingController {
         }
 
         if ($status === 'confirmed') {
-            if ($isBuyer) {
-                $actions[] = 'propose_pickup';
-            }
+            if ($latestOpenProposal === null) {
+                if ($isBuyer) {
+                    $actions[] = 'propose_pickup';
+                }
+            } else {
+                $proposedByUserId = (int) ($latestOpenProposal['proposed_by_user_id'] ?? 0);
+                $isProposalCreator = $proposedByUserId === $userId;
 
-            if ($isSeller) {
-                $actions[] = 'counter_pickup';
+                if (($isBuyer || $isSeller) && !$isProposalCreator) {
+                    $actions[] = 'accept_pickup';
+                    $actions[] = 'counter_pickup';
+                }
             }
 
             $actions[] = 'cancel';
@@ -361,21 +369,23 @@ class BookingController {
         return array_values(array_unique($actions));
     }
 
-    private function getActivePickupMapFromBuckets(array $result): array {
-        $map = [];
+    private function getPickupStateMapsFromBuckets(array $result): array {
+        $activePickupMap = [];
+        $latestOpenProposalMap = [];
 
         foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $bucket) {
             foreach (($result[$bucket] ?? []) as $booking) {
                 $bookingId = (int) ($booking['id'] ?? 0);
-                if ($bookingId <= 0 || isset($map[$bookingId])) {
+                if ($bookingId <= 0 || isset($activePickupMap[$bookingId])) {
                     continue;
                 }
 
-                $map[$bookingId] = $this->pickupWindowRepository->findLatestAcceptedByBookingId($bookingId);
+                $activePickupMap[$bookingId] = $this->pickupWindowRepository->findLatestAcceptedByBookingId($bookingId);
+                $latestOpenProposalMap[$bookingId] = $this->pickupWindowRepository->findLatestOpenByBookingId($bookingId);
             }
         }
 
-        return $map;
+        return [$activePickupMap, $latestOpenProposalMap];
     }
 
     private function formatTimelineEvents(array $events): array {
