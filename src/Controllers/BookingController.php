@@ -78,7 +78,8 @@ class BookingController {
 
         try {
             $result = $this->bookingService->listBookingsByRole($userId, $role, $status, $limit, $offset);
-            return Response::success($result, 200);
+            $enriched = $this->enrichDashboardBuckets($result, $role, $userId);
+            return Response::success($enriched, 200);
         } catch (Throwable $e) {
             return $this->mapBookingException($e);
         }
@@ -106,10 +107,13 @@ class BookingController {
 
         $events = $this->bookingEventRepository->findByBookingId($bookingId);
         $activePickupWindow = $this->pickupWindowRepository->findLatestAcceptedByBookingId($bookingId);
+        $role = ((int) ($booking['seller_id'] ?? 0) === $userId) ? 'seller' : 'buyer';
+        $booking = $this->enrichBookingRow($booking, $role, $userId, $activePickupWindow);
+        $timeline = $this->formatTimelineEvents($events);
 
         return Response::success([
             'booking' => $booking,
-            'timeline' => $events,
+            'timeline' => $timeline,
             'active_pickup_window' => $activePickupWindow,
         ], 200);
     }
@@ -277,6 +281,119 @@ class BookingController {
 
         $decoded = json_decode($raw, true);
         return is_array($decoded) ? $decoded : [];
+    }
+
+    private function enrichDashboardBuckets(array $result, string $role, int $userId): array {
+        $activePickupByBookingId = $this->getActivePickupMapFromBuckets($result);
+
+        foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $bucket) {
+            $rows = $result[$bucket] ?? [];
+            $enrichedRows = [];
+
+            foreach ($rows as $row) {
+                $bookingId = (int) ($row['id'] ?? 0);
+                $activePickupWindow = $activePickupByBookingId[$bookingId] ?? null;
+                $enrichedRows[] = $this->enrichBookingRow($row, $role, $userId, $activePickupWindow);
+            }
+
+            $result[$bucket] = $enrichedRows;
+        }
+
+        return $result;
+    }
+
+    private function enrichBookingRow(array $booking, string $role, int $userId, ?array $activePickupWindow): array {
+        $status = (string) ($booking['booking_status'] ?? '');
+        $isSeller = $role === 'seller';
+        $isBuyer = $role === 'buyer';
+
+        $respondBy = $booking['expires_at'] ?? null;
+        $secondsUntilExpiry = null;
+        $isExpired = false;
+
+        if ($respondBy !== null) {
+            $expiryTs = strtotime((string) $respondBy);
+            if ($expiryTs !== false) {
+                $secondsUntilExpiry = $expiryTs - time();
+                $isExpired = $secondsUntilExpiry <= 0;
+                if ($secondsUntilExpiry < 0) {
+                    $secondsUntilExpiry = 0;
+                }
+            }
+        }
+
+        $booking['respond_by'] = $isSeller && $status === 'pending' ? $respondBy : null;
+        $booking['seconds_until_expiry'] = $isSeller && $status === 'pending' ? $secondsUntilExpiry : null;
+        $booking['is_expired'] = $isSeller && $status === 'pending' ? $isExpired : false;
+        $booking['next_actions'] = $this->computeNextActions($booking, $isBuyer, $isSeller, $activePickupWindow);
+
+        return $booking;
+    }
+
+    private function computeNextActions(array $booking, bool $isBuyer, bool $isSeller, ?array $activePickupWindow): array {
+        $status = (string) ($booking['booking_status'] ?? '');
+        $actions = [];
+
+        if ($status === 'pending') {
+            if ($isSeller) {
+                $actions = ['confirm', 'cancel'];
+            } elseif ($isBuyer) {
+                $actions = ['cancel'];
+            }
+        }
+
+        if ($status === 'confirmed') {
+            if ($isBuyer) {
+                $actions[] = 'propose_pickup';
+            }
+
+            if ($isSeller) {
+                $actions[] = 'counter_pickup';
+            }
+
+            $actions[] = 'cancel';
+
+            if ($activePickupWindow !== null) {
+                $actions[] = 'complete';
+            }
+        }
+
+        return array_values(array_unique($actions));
+    }
+
+    private function getActivePickupMapFromBuckets(array $result): array {
+        $map = [];
+
+        foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $bucket) {
+            foreach (($result[$bucket] ?? []) as $booking) {
+                $bookingId = (int) ($booking['id'] ?? 0);
+                if ($bookingId <= 0 || isset($map[$bookingId])) {
+                    continue;
+                }
+
+                $map[$bookingId] = $this->pickupWindowRepository->findLatestAcceptedByBookingId($bookingId);
+            }
+        }
+
+        return $map;
+    }
+
+    private function formatTimelineEvents(array $events): array {
+        $timeline = [];
+
+        foreach ($events as $event) {
+            $timeline[] = [
+                'id' => (int) ($event['id'] ?? 0),
+                'event_type' => $event['event_type'] ?? null,
+                'actor_user_id' => isset($event['actor_user_id']) ? (int) $event['actor_user_id'] : null,
+                'reason_code' => $event['reason_code'] ?? null,
+                'note' => $event['note'] ?? null,
+                'event_at' => $event['event_at'] ?? null,
+                'is_cancellation_event' => in_array(($event['event_type'] ?? ''), ['cancelled', 'expired'], true),
+            ];
+        }
+
+        return $timeline;
     }
 
     private function mapBookingException(Throwable $e): string {

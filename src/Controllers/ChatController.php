@@ -50,6 +50,7 @@ class ChatController
      *   "data": [
      *     {
      *       "id": 1,
+     *       "booking_id": 14,
      *       "listing_title": "iPhone 15",
      *       "other_user_name": "Alice",
      *       "other_user_avatar": "...",
@@ -90,8 +91,29 @@ class ChatController
 
             // Get conversations via service
             $conversations = $this->chatService->getUserConversations($userId, $limit, $offset);
+            $formatted = [];
 
-            return Response::success($conversations, 200);
+            foreach ($conversations as $conversation) {
+                $formatted[] = [
+                    'id' => (int)($conversation['id'] ?? 0),
+                    'booking_id' => isset($conversation['booking_id']) ? (int)$conversation['booking_id'] : null,
+                    'listing_id' => (int)($conversation['listing_id'] ?? 0),
+                    'buyer_id' => (int)($conversation['buyer_id'] ?? 0),
+                    'seller_id' => (int)($conversation['seller_id'] ?? 0),
+                    'listing_title' => $conversation['listing_title'] ?? null,
+                    'other_user_id' => isset($conversation['other_user_id']) ? (int)$conversation['other_user_id'] : null,
+                    'other_user_first_name' => $conversation['other_user_first_name'] ?? null,
+                    'other_user_last_name' => $conversation['other_user_last_name'] ?? null,
+                    'other_user_avatar_url' => $conversation['other_user_avatar_url'] ?? null,
+                    'unread' => isset($conversation['unread']) ? (bool)$conversation['unread'] : false,
+                    'unread_count' => (int)($conversation['unread_count'] ?? 0),
+                    'last_message_at' => $conversation['last_message_at'] ?? null,
+                    'created_at' => $conversation['created_at'] ?? null,
+                    'updated_at' => $conversation['updated_at'] ?? null,
+                ];
+            }
+
+            return Response::success($formatted, 200);
 
         } catch (Exception $e) {
             return Response::error('Server error', 500);

@@ -52,6 +52,16 @@ class ConversationRepository extends BaseRepository {
                  c.last_message_at,
                  c.created_at,
                  c.updated_at,
+                 (
+                     SELECT b.id
+                     FROM bookings b
+                     WHERE b.listing_id = c.listing_id
+                       AND b.buyer_id = c.buyer_id
+                       AND b.seller_id = c.seller_id
+                       AND b.deleted_at IS NULL
+                     ORDER BY b.created_at DESC
+                     LIMIT 1
+                 ) as booking_id,
                  CASE 
                      WHEN c.buyer_id = ? THEN c.unread_by_buyer
                      WHEN c.seller_id = ? THEN c.unread_by_seller
