@@ -530,6 +530,19 @@ class BookingService {
             throw new InvalidArgumentException('Invalid pagination parameters');
         }
 
+        if (!in_array($role, ['buyer', 'seller'], true)) {
+            throw new InvalidArgumentException('Role must be buyer or seller');
+        }
+
+        if ($status !== null && !in_array($status, [
+            self::STATUS_PENDING,
+            self::STATUS_CONFIRMED,
+            self::STATUS_COMPLETED,
+            self::STATUS_CANCELLED,
+        ], true)) {
+            throw new InvalidArgumentException('Invalid booking status filter');
+        }
+
         $rows = $this->bookingRepo->findByRoleAndStatus($userId, $role, $status, $limit, $offset);
 
         $buckets = [
