@@ -119,7 +119,7 @@ class Router {
                         try {
                             $middleware->requireAuth();
                         } catch (\Exception $e) {
-                            return \ReuseIT\Response::error('Unauthorized - user must be logged in (debug)', 401);
+                            return \ReuseIT\Response::error('Unauthorized', 401);
                         }
                     }
                     

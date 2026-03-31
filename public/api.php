@@ -121,7 +121,7 @@ try {
     // Return generic error response (no internal details exposed)
     echo json_encode([
         'success' => false,
-        'error' => 'Server error -> ' . $e->getMessage()  // Include message for debugging (can be removed in production)
+        'error' => 'Internal Server Error'  // Include message for debugging (can be removed in production)
     ]);
     
     // Log error details to server log (not sent to client)
