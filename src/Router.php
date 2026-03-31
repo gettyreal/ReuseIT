@@ -67,6 +67,17 @@ class Router {
         $this->routes['POST']['/api/conversations/:id/messages'] = ['ChatController', 'sendMessage'];
         $this->routes['PATCH']['/api/conversations/:id/mark-read'] = ['ChatController', 'markConversationRead'];
         $this->routes['PATCH']['/api/messages/:id/mark-read'] = ['ChatController', 'markMessageRead'];
+
+        // Booking endpoints (Phase 6)
+        $this->routes['POST']['/api/bookings'] = ['BookingController', 'create'];
+        $this->routes['GET']['/api/bookings'] = ['BookingController', 'list'];
+        $this->routes['GET']['/api/bookings/:id'] = ['BookingController', 'show'];
+        $this->routes['PATCH']['/api/bookings/:id/confirm'] = ['BookingController', 'confirm'];
+        $this->routes['PATCH']['/api/bookings/:id/complete'] = ['BookingController', 'complete'];
+        $this->routes['PATCH']['/api/bookings/:id/cancel'] = ['BookingController', 'cancel'];
+        $this->routes['POST']['/api/bookings/:id/pickup/propose'] = ['BookingController', 'proposePickup'];
+        $this->routes['POST']['/api/bookings/:id/pickup/counter'] = ['BookingController', 'counterPickup'];
+        $this->routes['PATCH']['/api/bookings/:id/pickup/accept'] = ['BookingController', 'acceptPickup'];
         
         // Health check (Phase 1)
         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
@@ -103,6 +114,15 @@ class Router {
             'ChatController:sendMessage',
             'ChatController:markConversationRead',
             'ChatController:markMessageRead',
+            'BookingController:create',
+            'BookingController:list',
+            'BookingController:show',
+            'BookingController:confirm',
+            'BookingController:complete',
+            'BookingController:cancel',
+            'BookingController:proposePickup',
+            'BookingController:counterPickup',
+            'BookingController:acceptPickup',
         ];
         
         // Iterate through registered routes for this method
@@ -160,6 +180,30 @@ class Router {
                         $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
                         $chatService = new \ReuseIT\Services\ChatService($conversationRepo, $messageRepo, $userRepo);
                         $controller = new $controllerNamespace($chatService);
+                    } elseif ($controllerClass === 'BookingController' && $this->pdo !== null) {
+                        // BookingController requires BookingService and repositories
+                        $bookingRepository = new \ReuseIT\Repositories\BookingRepository($this->pdo);
+                        $bookingEventRepository = new \ReuseIT\Repositories\BookingEventRepository($this->pdo);
+                        $pickupWindowRepository = new \ReuseIT\Repositories\PickupWindowRepository($this->pdo);
+                        $bookingNotificationService = new \ReuseIT\Services\BookingNotificationService();
+                        $conversationRepository = new \ReuseIT\Repositories\ConversationRepository($this->pdo);
+                        $listingRepository = new \ReuseIT\Repositories\ListingRepository($this->pdo);
+                        $bookingService = new \ReuseIT\Services\BookingService(
+                            $this->pdo,
+                            $bookingRepository,
+                            $bookingEventRepository,
+                            $pickupWindowRepository,
+                            $conversationRepository,
+                            $listingRepository,
+                            $bookingNotificationService
+                        );
+
+                        $controller = new $controllerNamespace(
+                            $bookingService,
+                            $bookingRepository,
+                            $bookingEventRepository,
+                            $pickupWindowRepository
+                        );
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
