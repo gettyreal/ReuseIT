@@ -61,6 +61,27 @@ class PickupWindowRepository extends BaseRepository {
     }
 
     /**
+     * Find latest open pickup proposal (proposed/countered) for a booking.
+     */
+    public function findLatestOpenByBookingId(int $bookingId): ?array {
+        $sql = "
+            SELECT *
+            FROM {$this->table}
+            WHERE booking_id = ?
+              AND proposal_status IN ('proposed', 'countered')
+              AND deleted_at IS NULL
+            ORDER BY updated_at DESC, created_at DESC, id DESC
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$bookingId]);
+        $pickupWindow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $pickupWindow ?: null;
+    }
+
+    /**
      * Invalidate older unresolved proposals after a new response.
      */
     public function invalidatePendingForBooking(int $bookingId): bool {
