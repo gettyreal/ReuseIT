@@ -3,6 +3,7 @@ namespace ReuseIT\Services;
 
 use ReuseIT\Repositories\UserRepository;
 use Exception;
+use ReuseIT\Services\ReviewService;
 
 /**
  * UserService
@@ -18,23 +19,26 @@ use Exception;
 class UserService {
     private UserRepository $userRepo;
     private GeolocationService $geoService;
+    private ?ReviewService $reviewService = null;
     
     /**
      * Initialize service with user repository and geocoding dependencies.
      * 
      * @param UserRepository $userRepo User repository for database access
      * @param GeolocationService $geoService Address geocoding service
+     * @param ReviewService|null $reviewService Optional review service for rating stats
      */
-    public function __construct(UserRepository $userRepo, GeolocationService $geoService) {
+    public function __construct(UserRepository $userRepo, GeolocationService $geoService, ?ReviewService $reviewService = null) {
         $this->userRepo = $userRepo;
         $this->geoService = $geoService;
+        $this->reviewService = $reviewService;
     }
     
     /**
      * Get complete user profile by user ID.
      * 
      * Returns all profile information including address as nested object
-     * and statistics fields (currently returning 0 until Phase 3+).
+     * and statistics fields (active listings, completed sales, reviews/reputation).
      * 
      * @param int $userId User ID
      * @return array Complete user profile with nested address and statistics
@@ -45,6 +49,12 @@ class UserService {
         
         if (!$user) {
             throw new Exception('User not found');
+        }
+        
+        // Get review statistics if ReviewService is available
+        $reviewStats = null;
+        if ($this->reviewService !== null) {
+            $reviewStats = $this->reviewService->getUserStats($userId);
         }
         
         // Build response object with all fields
@@ -65,8 +75,9 @@ class UserService {
             'statistics' => [
                 'active_listings_count' => $this->getActiveListingsCount($userId),
                 'completed_sales_count' => $this->getCompletedSalesCount($userId),
-                'average_rating' => 0,
-                'total_reviews' => 0
+                'avg_rating' => $reviewStats['avg_rating'] ?? null,
+                'total_reviews' => $reviewStats['total_reviews'] ?? 0,
+                'rating_distribution' => $reviewStats['distribution'] ?? ['5' => 0, '4' => 0, '3' => 0, '2' => 0, '1' => 0]
             ]
         ];
     }
