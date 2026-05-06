@@ -79,6 +79,11 @@ class Router {
         $this->routes['POST']['/api/bookings/:id/pickup/counter'] = ['BookingController', 'counterPickup'];
         $this->routes['PATCH']['/api/bookings/:id/pickup/accept'] = ['BookingController', 'acceptPickup'];
         
+        // Review endpoints (Phase 7)
+        $this->routes['POST']['/api/reviews'] = ['ReviewController', 'submitReview'];
+        $this->routes['GET']['/api/reviews/user/:id'] = ['ReviewController', 'getReviewsByUser'];
+        $this->routes['GET']['/api/users/:id/stats'] = ['ReviewController', 'getUserStats'];
+        
         // Health check (Phase 1)
         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
     }
@@ -123,6 +128,7 @@ class Router {
             'BookingController:proposePickup',
             'BookingController:counterPickup',
             'BookingController:acceptPickup',
+            'ReviewController:submitReview',
         ];
         
         // Iterate through registered routes for this method
@@ -157,10 +163,18 @@ class Router {
                         $authService = new \ReuseIT\Services\AuthService($userRepo, $geoService, $sessionHandler, $rateLimiter);
                         $controller = new $controllerNamespace($authService);
                     } elseif ($controllerClass === 'UserController' && $this->pdo !== null) {
-                        // UserController requires UserService with its dependencies (including geocoding)
+                        // UserController requires UserService with its dependencies (including geocoding and reviews)
                         $userRepo = new \ReuseIT\Repositories\UserRepository($this->pdo);
                         $geoService = new \ReuseIT\Services\GeolocationService($this->pdo);
-                        $userService = new \ReuseIT\Services\UserService($userRepo, $geoService);
+                        
+                        // Include ReviewService for rating stats in user profile
+                        $reviewRepo = new \ReuseIT\Repositories\ReviewRepository($this->pdo);
+                        $bookingRepo = new \ReuseIT\Repositories\BookingRepository($this->pdo);
+                        $reviewRateLimitRepo = new \ReuseIT\Repositories\ReviewRateLimitRepository($this->pdo);
+                        $reviewRateLimitService = new \ReuseIT\Services\ReviewRateLimitService($reviewRateLimitRepo);
+                        $reviewService = new \ReuseIT\Services\ReviewService($this->pdo, $reviewRepo, $bookingRepo, $userRepo, $reviewRateLimitService);
+                        
+                        $userService = new \ReuseIT\Services\UserService($userRepo, $geoService, $reviewService);
                         $response = new \ReuseIT\Response();
                         $controller = new $controllerNamespace($userService, $response);
                     } elseif ($controllerClass === 'ListingController' && $this->pdo !== null) {
@@ -204,6 +218,22 @@ class Router {
                             $bookingEventRepository,
                             $pickupWindowRepository
                         );
+                    } elseif ($controllerClass === 'ReviewController' && $this->pdo !== null) {
+                        // ReviewController requires ReviewService and repositories
+                        $reviewRepository = new \ReuseIT\Repositories\ReviewRepository($this->pdo);
+                        $bookingRepository = new \ReuseIT\Repositories\BookingRepository($this->pdo);
+                        $userRepository = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $reviewRateLimitRepository = new \ReuseIT\Repositories\ReviewRateLimitRepository($this->pdo);
+                        $reviewRateLimitService = new \ReuseIT\Services\ReviewRateLimitService($reviewRateLimitRepository);
+                        $reviewService = new \ReuseIT\Services\ReviewService(
+                            $this->pdo,
+                            $reviewRepository,
+                            $bookingRepository,
+                            $userRepository,
+                            $reviewRateLimitService
+                        );
+
+                        $controller = new $controllerNamespace($reviewService, $reviewRepository, $bookingRepository);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
