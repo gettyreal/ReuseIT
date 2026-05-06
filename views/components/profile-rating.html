@@ -1,0 +1,54 @@
+<!-- Profile Rating Component -->
+<!-- 
+    Rating summary displayed on user profile header.
+    Shows average rating, total review count, and rating distribution breakdown.
+-->
+
+<div id="profile-rating" class="profile-rating">
+    <div class="rating-summary">
+        <div id="rating-summary-display" class="rating-summary-display">
+            <!-- Populated by JavaScript with format: "4.8★ from 23 reviews" -->
+        </div>
+    </div>
+    
+    <div id="rating-distribution" class="rating-distribution" style="display: none;">
+        <h4>Rating Breakdown</h4>
+        <div class="distribution-list">
+            <div class="distribution-item">
+                <span class="distribution-label">5 stars</span>
+                <div class="distribution-bar-container">
+                    <div class="distribution-bar distribution-bar-5"></div>
+                </div>
+                <span class="distribution-count" data-rating="5">0</span>
+            </div>
+            <div class="distribution-item">
+                <span class="distribution-label">4 stars</span>
+                <div class="distribution-bar-container">
+                    <div class="distribution-bar distribution-bar-4"></div>
+                </div>
+                <span class="distribution-count" data-rating="4">0</span>
+            </div>
+            <div class="distribution-item">
+                <span class="distribution-label">3 stars</span>
+                <div class="distribution-bar-container">
+                    <div class="distribution-bar distribution-bar-3"></div>
+                </div>
+                <span class="distribution-count" data-rating="3">0</span>
+            </div>
+            <div class="distribution-item">
+                <span class="distribution-label">2 stars</span>
+                <div class="distribution-bar-container">
+                    <div class="distribution-bar distribution-bar-2"></div>
+                </div>
+                <span class="distribution-count" data-rating="2">0</span>
+            </div>
+            <div class="distribution-item">
+                <span class="distribution-label">1 star</span>
+                <div class="distribution-bar-container">
+                    <div class="distribution-bar distribution-bar-1"></div>
+                </div>
+                <span class="distribution-count" data-rating="1">0</span>
+            </div>
+        </div>
+    </div>
+</div>

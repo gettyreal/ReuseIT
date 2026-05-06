@@ -1,0 +1,555 @@
+/**
+ * reviews.css
+ * 
+ * Styling for review components: modal, star picker, history, and rating display.
+ */
+
+/* ============================================
+   Review Modal Styling
+   ============================================ */
+
+.review-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.review-modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.review-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.review-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.review-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-modal-close:hover {
+    color: #333;
+}
+
+/* ============================================
+   Review Form Styling
+   ============================================ */
+
+.review-form {
+    padding: 20px;
+}
+
+.review-form-group {
+    margin-bottom: 20px;
+}
+
+.review-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+/* ============================================
+   Star Picker Styling
+   ============================================ */
+
+.star-picker {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.star-picker .star {
+    font-size: 32px;
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+    user-select: none;
+}
+
+.star-picker .star:hover,
+.star-picker .star.filled {
+    color: #ffc107;
+    text-shadow: 0 1px 3px rgba(255, 193, 7, 0.3);
+}
+
+/* ============================================
+   Rating Display
+   ============================================ */
+
+#rating-display {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+}
+
+.rating-display {
+    padding: 8px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+/* ============================================
+   Review Textarea
+   ============================================ */
+
+.review-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.review-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.review-char-counter {
+    text-align: right;
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Form Actions
+   ============================================ */
+
+.review-form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-secondary {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #efefef;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* ============================================
+   Error Message
+   ============================================ */
+
+.review-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+/* ============================================
+   Review Item List
+   ============================================ */
+
+.review-history {
+    margin-top: 20px;
+}
+
+.review-history-header {
+    margin-bottom: 16px;
+}
+
+.review-history-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.review-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-item {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 16px;
+    background-color: #fafafa;
+    transition: box-shadow 0.2s ease;
+}
+
+.review-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.review-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.review-reviewer-info {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.review-reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #e0e0e0;
+}
+
+.review-reviewer-details {
+    flex: 1;
+}
+
+.review-reviewer-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.review-rating-stars {
+    color: #ffc107;
+    font-size: 13px;
+    margin-top: 2px;
+    letter-spacing: 1px;
+}
+
+.review-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.review-item-body {
+    margin-left: 52px;
+}
+
+.review-comment-preview,
+.review-comment-full {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    word-wrap: break-word;
+    margin-bottom: 8px;
+}
+
+.comment-truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.review-expand-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.review-expand-btn:hover {
+    color: #0056b3;
+}
+
+/* ============================================
+   Review Empty State
+   ============================================ */
+
+.review-empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+
+.review-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.review-page-info {
+    font-size: 13px;
+    color: #666;
+    padding: 0 8px;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* ============================================
+   Profile Rating Display
+   ============================================ */
+
+.profile-rating {
+    margin: 20px 0;
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+.rating-summary {
+    margin-bottom: 16px;
+}
+
+.rating-summary-display {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.rating-summary-display .rating-stars {
+    color: #ffc107;
+    margin-right: 4px;
+}
+
+.rating-summary-display .rating-count {
+    color: #666;
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.rating-distribution {
+    margin-top: 12px;
+}
+
+.rating-distribution h4 {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.distribution-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.distribution-label {
+    font-size: 12px;
+    color: #666;
+    min-width: 50px;
+}
+
+.distribution-bar-container {
+    flex: 1;
+    height: 16px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.distribution-bar {
+    height: 100%;
+    background-color: #ffc107;
+    transition: width 0.3s ease;
+}
+
+.distribution-bar-5 {
+    background-color: #ffc107;
+}
+
+.distribution-bar-4 {
+    background-color: #ff9800;
+}
+
+.distribution-bar-3 {
+    background-color: #ff9100;
+}
+
+.distribution-bar-2 {
+    background-color: #ff6b6b;
+}
+
+.distribution-bar-1 {
+    background-color: #dc3545;
+}
+
+.distribution-count {
+    font-size: 12px;
+    color: #666;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* ============================================
+   Toast Notifications
+   ============================================ */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.toast {
+    background-color: white;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    pointer-events: auto;
+    animation: slideInRight 0.3s ease;
+}
+
+.toast-success {
+    border-left: 4px solid #28a745;
+    color: #155724;
+    background-color: #d4edda;
+}
+
+.toast-error {
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
+.toast-info {
+    border-left: 4px solid #17a2b8;
+    color: #0c5460;
+    background-color: #d1ecf1;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .review-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .review-form {
+        padding: 16px;
+    }
+    
+    .review-item-header {
+        flex-direction: column;
+    }
+    
+    .review-date {
+        margin-top: 8px;
+    }
+    
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        top: auto;
+        bottom: 10px;
+    }
+    
+    .distribution-item {
+        flex-wrap: wrap;
+    }
+}

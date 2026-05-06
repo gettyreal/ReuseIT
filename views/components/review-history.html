@@ -1,0 +1,49 @@
+<!-- Review History Component -->
+<!-- 
+    Paginated list of reviews received by a user.
+    Displays reviewer info, rating, and comment (truncated at 100 chars with expand button).
+    Default 10 reviews per page.
+-->
+
+<div id="review-history" class="review-history">
+    <div class="review-history-header">
+        <h3 id="review-history-title">Reviews</h3>
+    </div>
+    
+    <div id="review-list-container" class="review-list-container">
+        <!-- Reviews will be rendered here by JavaScript -->
+    </div>
+    
+    <!-- Pagination controls -->
+    <div id="review-pagination" class="review-pagination" style="display: none;">
+        <button type="button" id="review-prev-page" class="btn btn-sm btn-secondary">← Previous</button>
+        <span id="review-page-info" class="review-page-info"></span>
+        <button type="button" id="review-next-page" class="btn btn-sm btn-secondary">Next →</button>
+    </div>
+    
+    <!-- Empty state -->
+    <div id="review-empty-state" class="review-empty-state" style="display: none;">
+        <p>No reviews yet</p>
+    </div>
+</div>
+
+<!-- Template for individual review item (hidden, cloned by JavaScript) -->
+<template id="review-item-template">
+    <div class="review-item">
+        <div class="review-item-header">
+            <div class="review-reviewer-info">
+                <img src="" alt="Reviewer avatar" class="review-reviewer-avatar" />
+                <div class="review-reviewer-details">
+                    <div class="review-reviewer-name"></div>
+                    <div class="review-rating-stars"></div>
+                </div>
+            </div>
+            <div class="review-date"></div>
+        </div>
+        <div class="review-item-body">
+            <div class="review-comment-preview"></div>
+            <div class="review-comment-full" style="display: none;"></div>
+            <button type="button" class="review-expand-btn" style="display: none;">Show more</button>
+        </div>
+    </div>
+</template>

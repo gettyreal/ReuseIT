@@ -1,0 +1,59 @@
+<!-- Review Modal Component -->
+<!-- 
+    Review submission modal shown after booking completion.
+    User selects a rating (1-5 stars) and optionally enters a comment (max 500 chars).
+    Submits to POST /api/reviews with booking_id, rating, and comment.
+-->
+
+<div id="review-modal" class="review-modal" style="display: none;">
+    <div class="review-modal-content">
+        <div class="review-modal-header">
+            <h2>Leave a Review</h2>
+            <button type="button" class="review-modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        
+        <form id="review-form" class="review-form">
+            <!-- Hidden booking ID -->
+            <input type="hidden" id="booking-id" name="booking_id" value="">
+            
+            <!-- Star picker -->
+            <div class="review-form-group">
+                <label for="star-rating" class="review-label">Your Rating</label>
+                <div class="star-picker" id="star-picker">
+                    <span class="star" data-value="1" aria-label="1 star">☆</span>
+                    <span class="star" data-value="2" aria-label="2 stars">☆</span>
+                    <span class="star" data-value="3" aria-label="3 stars">☆</span>
+                    <span class="star" data-value="4" aria-label="4 stars">☆</span>
+                    <span class="star" data-value="5" aria-label="5 stars">☆</span>
+                </div>
+                <div id="rating-display" class="rating-display" style="display: none;"></div>
+                <input type="hidden" id="star-rating" name="rating" value="">
+            </div>
+            
+            <!-- Comment textarea -->
+            <div class="review-form-group">
+                <label for="review-comment" class="review-label">Comment (Optional)</label>
+                <textarea 
+                    id="review-comment" 
+                    name="comment" 
+                    class="review-textarea"
+                    placeholder="Share your experience... (max 500 characters)"
+                    maxlength="500"
+                    rows="4"
+                ></textarea>
+                <div class="review-char-counter">
+                    <span id="char-count">0</span>/500
+                </div>
+            </div>
+            
+            <!-- Error message placeholder -->
+            <div id="review-error" class="review-error" style="display: none;"></div>
+            
+            <!-- Form buttons -->
+            <div class="review-form-actions">
+                <button type="button" id="review-cancel" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="review-submit" class="btn btn-primary" disabled>Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
