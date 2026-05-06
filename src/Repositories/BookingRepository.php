@@ -170,6 +170,24 @@ class BookingRepository extends BaseRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$listingId, $sellerId]);
 
-        return (bool) $stmt->fetchColumn();
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get booking status for a given booking ID.
+     *
+     * Helper method for validation logic (e.g., review submission).
+     * Returns the booking status string or null if booking not found.
+     *
+     * @param int $bookingId Booking ID
+     * @return ?string Booking status ('pending'|'confirmed'|'completed'|'cancelled') or null
+     */
+    public function getBookingStatus(int $bookingId): ?string {
+        $sql = "SELECT booking_status FROM {$this->table} WHERE id = ?" . $this->applyDeleteFilter();
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$bookingId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['booking_status'] ?? null;
     }
 }
