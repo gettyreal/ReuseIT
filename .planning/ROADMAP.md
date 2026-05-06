@@ -83,12 +83,10 @@ This roadmap breaks down the development of ReuseIT into 8 phases, each with out
 - **API-03:** API enforces authentication for protected endpoints
 
 ### Plans
-**Status:** ✓ PLANNED (3 plans, 11 tasks total)
+**Status:** Phase 1 ✓ COMPLETE (1/1 plan)
 
 Plans:
-- [x] 02-01-PLAN.md — Authentication Infrastructure (registration, login, logout, geolocation)
-- [x] 02-02-PLAN.md — User Services & Profile Management (profile view/edit, authorization)
-- [x] 02-03-PLAN.md — Rate Limiting & Security (brute-force protection, lockout enforcement)
+- [x] 01-01-PLAN.md — ✓ COMPLETE Foundation Infrastructure (database, router, sessions, response envelope)
 
 **Unmapped after Phase 2:** 42 requirements (covered by later phases)
 
@@ -344,7 +342,17 @@ Plans:
 - **ADMIN-05:** Admin can remove/hide reported listings
 - **ADMIN-06:** Admin can suspend/ban problematic users
 
-**All v1 requirements covered after Phase 8:** 50/50 ✓
+**All v1 requirements covered after Phase 8:** 54/54 ✓
+
+### Plans
+**Status:** PLANNING COMPLETE (5 plans, 15 tasks total)
+
+Plans:
+- [ ] 08-01-PLAN.md — Data Foundations (Favorites + Reports models/repos, admin role field)
+- [ ] 08-02-PLAN.md — Services & Business Logic (FavoritesService, ReportService with validation)
+- [ ] 08-03-PLAN.md — Favorites & Report Controllers (5 endpoints + Router integration)
+- [ ] 08-04-PLAN.md — Admin Actions & Panel (AdminService, AdminController, hidden_at/banned_at columns)
+- [ ] 08-05-PLAN.md — Error Handling & Polish (ErrorHandler, error pages, database indexes, pagination)
 
 ### Key Pitfalls to Address
 - Admin role enforcement (check role on every admin endpoint; no data leakage to non-admins)
