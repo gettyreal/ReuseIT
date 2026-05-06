@@ -36,3 +36,19 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS total_reviews INT DEFAULT 0;
 
 -- Index for "top-rated" queries
 ALTER TABLE users ADD INDEX IF NOT EXISTS idx_avg_rating (avg_rating);
+
+-- ============================================================================
+-- 3. Create review_rate_limits table for spam prevention (1 per 24 hours)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS review_rate_limits (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  submitted_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- Indexes for rate limit lookups
+  INDEX idx_user_submitted (user_id, submitted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
