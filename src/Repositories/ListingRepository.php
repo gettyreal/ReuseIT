@@ -40,9 +40,9 @@ class ListingRepository extends BaseRepository {
      * @param int $offset Number of results to skip (default 0)
      * @return array Array of listing records with pagination
      */
-    public function findAll(array $filters = [], int $limit = 20, int $offset = 0): array {
-        $sql = "SELECT * FROM {$this->table} WHERE 1=1" . $this->applyDeleteFilter();
-        $params = [];
+     public function findAll(array $filters = [], int $limit = 20, int $offset = 0): array {
+         $sql = "SELECT * FROM {$this->table} WHERE 1=1" . $this->applyDeleteFilter() . " AND hidden_at IS NULL";
+         $params = [];
         
         // Apply category filter if provided
         if (isset($filters['category_id'])) {
@@ -90,9 +90,9 @@ class ListingRepository extends BaseRepository {
      * @param array $filters Same filters as findAll()
      * @return int Total count of matching listings
      */
-    public function countAll(array $filters = []): int {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table} WHERE 1=1" . $this->applyDeleteFilter();
-        $params = [];
+     public function countAll(array $filters = []): int {
+         $sql = "SELECT COUNT(*) as total FROM {$this->table} WHERE 1=1" . $this->applyDeleteFilter() . " AND hidden_at IS NULL";
+         $params = [];
         
         // Apply same filters as findAll()
         if (isset($filters['category_id'])) {
@@ -141,9 +141,9 @@ class ListingRepository extends BaseRepository {
                    u.avatar_url as seller_avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE l.id = ?" . $this->applyDeleteFilter('l') . "
+            WHERE l.id = ?" . $this->applyDeleteFilter('l') . " AND l.hidden_at IS NULL
             GROUP BY l.id
         ";
         
@@ -199,9 +199,9 @@ class ListingRepository extends BaseRepository {
                    u.first_name, u.last_name, u.avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE (l.title LIKE ? OR l.description LIKE ?) AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            WHERE (l.title LIKE ? OR l.description LIKE ?) AND l.deleted_at IS NULL AND l.hidden_at IS NULL AND u.deleted_at IS NULL
             GROUP BY l.id
             ORDER BY l.created_at DESC
             LIMIT ? OFFSET ?
@@ -226,9 +226,9 @@ class ListingRepository extends BaseRepository {
                    u.first_name, u.last_name, u.avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE l.category_id = ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            WHERE l.category_id = ? AND l.deleted_at IS NULL AND l.hidden_at IS NULL AND u.deleted_at IS NULL
             GROUP BY l.id
             ORDER BY l.created_at DESC
             LIMIT ? OFFSET ?
@@ -260,9 +260,9 @@ class ListingRepository extends BaseRepository {
                    u.first_name, u.last_name, u.avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE l.condition = ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            WHERE l.condition = ? AND l.deleted_at IS NULL AND l.hidden_at IS NULL AND u.deleted_at IS NULL
             GROUP BY l.id
             ORDER BY l.created_at DESC
             LIMIT ? OFFSET ?
@@ -292,9 +292,9 @@ class ListingRepository extends BaseRepository {
                    u.first_name, u.last_name, u.avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE l.price BETWEEN ? AND ? AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            WHERE l.price BETWEEN ? AND ? AND l.deleted_at IS NULL AND l.hidden_at IS NULL AND u.deleted_at IS NULL
             GROUP BY l.id
             ORDER BY l.created_at DESC
             LIMIT ? OFFSET ?
@@ -326,9 +326,9 @@ class ListingRepository extends BaseRepository {
                    u.first_name, u.last_name, u.avatar_url,
                    COUNT(DISTINCT p.id) as photo_count
             FROM {$this->table} l
-            LEFT JOIN users u ON l.seller_id = u.id
+            LEFT JOIN users u ON l.seller_id = u.id AND u.banned_at IS NULL
             LEFT JOIN listing_photos p ON l.id = p.listing_id AND p.deleted_at IS NULL
-            WHERE 1=1 AND l.deleted_at IS NULL AND u.deleted_at IS NULL
+            WHERE 1=1 AND l.deleted_at IS NULL AND l.hidden_at IS NULL AND u.deleted_at IS NULL
         ";
         
         $params = [];
@@ -425,9 +425,9 @@ class ListingRepository extends BaseRepository {
         
         $params = [];
         
-        // Apply soft-delete filtering
-        $sql .= " AND l.deleted_at IS NULL AND u.deleted_at IS NULL AND l.status = ?";
-        $params[] = 'active';
+         // Apply soft-delete filtering
+         $sql .= " AND l.deleted_at IS NULL AND u.deleted_at IS NULL AND l.hidden_at IS NULL AND l.status = ?";
+         $params[] = 'active';
         
         // Apply optional keyword filter (searches title and description)
         if (isset($filters['keyword']) && !empty($filters['keyword'])) {
@@ -464,8 +464,47 @@ class ListingRepository extends BaseRepository {
         $sql .= " GROUP BY l.id ORDER BY l.created_at DESC LIMIT ?";
         $params[] = $limit;
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+         $stmt = $this->pdo->prepare($sql);
+         $stmt->execute($params);
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+     }
+     
+     /**
+      * Hide a listing by setting hidden_at timestamp.
+      * Prevents listing from appearing in search results.
+      * 
+      * @param int $id Listing ID
+      * @return void
+      */
+     public function hideListing(int $id): void {
+         $sql = "UPDATE {$this->table} SET hidden_at = NOW() WHERE id = ?";
+         $stmt = $this->pdo->prepare($sql);
+         $stmt->execute([$id]);
+     }
+     
+     /**
+      * Unhide a listing by clearing hidden_at timestamp.
+      * Restores listing visibility (if not deleted).
+      * 
+      * @param int $id Listing ID
+      * @return void
+      */
+     public function unhideListing(int $id): void {
+         $sql = "UPDATE {$this->table} SET hidden_at = NULL WHERE id = ?";
+         $stmt = $this->pdo->prepare($sql);
+         $stmt->execute([$id]);
+     }
+     
+     /**
+      * Count total hidden listings for admin stats.
+      * 
+      * @return int Number of hidden listings
+      */
+     public function countHiddenListings(): int {
+         $sql = "SELECT COUNT(*) as total FROM {$this->table} WHERE hidden_at IS NOT NULL AND deleted_at IS NULL";
+         $stmt = $this->pdo->prepare($sql);
+         $stmt->execute();
+         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+         return $result['total'] ?? 0;
+     }
 }
