@@ -131,6 +131,7 @@ class FavoritesController {
                     'limit' => $limit,
                     'offset' => $offset,
                     'total' => $result['total'],
+                    'next_offset' => ($offset + $limit < $result['total']) ? $offset + $limit : null,
                 ],
             ];
             

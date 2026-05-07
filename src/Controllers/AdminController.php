@@ -107,7 +107,8 @@ class AdminController {
                 'pagination' => [
                     'limit' => $limit,
                     'offset' => $offset,
-                    'total' => $total
+                    'total' => $total,
+                    'next_offset' => ($offset + $limit < $total) ? $offset + $limit : null,
                 ]
             ];
             

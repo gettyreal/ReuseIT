@@ -1,0 +1,129 @@
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 20px 0;
+}
+
+.pagination button,
+.pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination button:hover,
+.pagination a:hover {
+    background: #f5f5f5;
+    border-color: #999;
+}
+
+.pagination button:active,
+.pagination a:active {
+    background: #e0e0e0;
+}
+
+.pagination button.active,
+.pagination a.active {
+    background: #667eea;
+    color: #fff;
+    border-color: #667eea;
+}
+
+.pagination button:disabled,
+.pagination button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.pagination .page-info {
+    padding: 0 12px;
+    color: #666;
+    font-size: 14px;
+}
+
+.pagination .load-more {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #667eea;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination .load-more:hover {
+    background: #764ba2;
+}
+
+.pagination .load-more:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Image Lazy Loading */
+img[loading="lazy"] {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+img[loading="lazy"]:not([src]) {
+    opacity: 0.5;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Optimize image loading with lazy loading attribute */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.thumbnail-image {
+    object-fit: cover;
+    aspect-ratio: 4/3;
+}
+
+.avatar-image {
+    object-fit: cover;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+}
+
+/* Fallback for browsers without lazy loading support */
+@supports not (loading: lazy) {
+    img.lazy-load {
+        /* Use a different approach for older browsers if needed */
+        opacity: 1;
+    }
+}
