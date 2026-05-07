@@ -63,7 +63,7 @@ class FavoritesController {
                 'favorited' => $result['favorited'],
             ];
             
-            return Response::success($data, 200, 'Favorite toggled');
+            return Response::success($data, 200);
         } catch (\InvalidArgumentException $e) {
             // Validation errors from service layer
             $message = $e->getMessage();
@@ -134,7 +134,7 @@ class FavoritesController {
                 ],
             ];
             
-            return Response::success($data, 200, 'Favorites retrieved');
+            return Response::success($data, 200);
         } catch (\Exception $e) {
             return Response::error('Server error', 500);
         }

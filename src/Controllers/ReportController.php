@@ -92,7 +92,7 @@ class ReportController {
                 'status' => $result['status'],
             ];
             
-            return Response::success($data, 201, 'Listing reported successfully');
+            return Response::success($data, 201);
         } catch (\InvalidArgumentException $e) {
             // Validation errors from service layer
             $message = $e->getMessage();
@@ -184,7 +184,7 @@ class ReportController {
                 'status' => $result['status'],
             ];
             
-            return Response::success($data, 201, 'User reported successfully');
+            return Response::success($data, 201);
         } catch (\InvalidArgumentException $e) {
             // Validation errors from service layer
             $message = $e->getMessage();
@@ -270,7 +270,7 @@ class ReportController {
                 ],
             ];
             
-            return Response::success($data, 200, 'Reports retrieved');
+            return Response::success($data, 200);
         } catch (\Exception $e) {
             return Response::error('Server error', 500);
         }

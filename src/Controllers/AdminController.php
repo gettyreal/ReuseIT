@@ -111,7 +111,7 @@ class AdminController {
                 ]
             ];
             
-            return Response::success($data, 200, 'Reports retrieved');
+            return Response::success($data, 200);
         } catch (\Exception $e) {
             return Response::error('Server error', 500);
         }
@@ -157,7 +157,7 @@ class AdminController {
                 'report_id' => $result['report_id']
             ];
             
-            return Response::success($data, 200, 'Report approved and content hidden');
+            return Response::success($data, 200);
         } catch (\InvalidArgumentException $e) {
             // Validation errors from service layer
             $message = $e->getMessage();
@@ -213,7 +213,7 @@ class AdminController {
                 'report_id' => $result['report_id']
             ];
             
-            return Response::success($data, 200, 'Report rejected');
+            return Response::success($data, 200);
         } catch (\InvalidArgumentException $e) {
             // Validation errors from service layer
             $message = $e->getMessage();
@@ -256,7 +256,7 @@ class AdminController {
             // Get stats from service
             $stats = $this->adminService->getAdminStats();
             
-            return Response::success($stats, 200, 'Stats retrieved');
+            return Response::success($stats, 200);
         } catch (\Exception $e) {
             return Response::error('Server error', 500);
         }
