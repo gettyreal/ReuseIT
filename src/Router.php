@@ -88,13 +88,18 @@ class Router {
         $this->routes['POST']['/api/listings/:id/favorite'] = ['FavoritesController', 'toggleFavorite'];
         $this->routes['GET']['/api/favorites'] = ['FavoritesController', 'getFavorites'];
         
-        // Report endpoints (Phase 8)
-        $this->routes['POST']['/api/listings/:id/report'] = ['ReportController', 'reportListing'];
-        $this->routes['POST']['/api/users/:id/report'] = ['ReportController', 'reportUser'];
-        $this->routes['GET']['/api/admin/reports'] = ['ReportController', 'getReports'];
-        
-        // Health check (Phase 1)
-        $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
+         // Report endpoints (Phase 8)
+         $this->routes['POST']['/api/listings/:id/report'] = ['ReportController', 'reportListing'];
+         $this->routes['POST']['/api/users/:id/report'] = ['ReportController', 'reportUser'];
+         $this->routes['GET']['/api/admin/reports'] = ['ReportController', 'getReports'];
+         
+         // Admin action endpoints (Phase 8)
+         $this->routes['GET']['/api/admin/stats'] = ['AdminController', 'getAdminStats'];
+         $this->routes['PATCH']['/api/admin/reports/:id/approve'] = ['AdminController', 'approveReport'];
+         $this->routes['PATCH']['/api/admin/reports/:id/reject'] = ['AdminController', 'rejectReport'];
+         
+         // Health check (Phase 1)
+         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
     }
     
     /**
@@ -143,6 +148,9 @@ class Router {
             'ReportController:reportListing',
             'ReportController:reportUser',
             'ReportController:getReports',
+            'AdminController:getAdminStats',
+            'AdminController:approveReport',
+            'AdminController:rejectReport',
         ];
         
         // Iterate through registered routes for this method
@@ -262,6 +270,14 @@ class Router {
                         $userRepository = new \ReuseIT\Repositories\UserRepository($this->pdo);
                         $reportService = new \ReuseIT\Services\ReportService($reportRepository, $listingRepository, $userRepository);
                         $controller = new $controllerNamespace($reportService);
+                    } elseif ($controllerClass === 'AdminController' && $this->pdo !== null) {
+                        // AdminController requires AdminService and ReportService with their dependencies
+                        $listingRepository = new \ReuseIT\Repositories\ListingRepository($this->pdo);
+                        $userRepository = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $reportRepository = new \ReuseIT\Repositories\ReportRepository($this->pdo);
+                        $adminService = new \ReuseIT\Services\AdminService($listingRepository, $userRepository, $reportRepository);
+                        $reportService = new \ReuseIT\Services\ReportService($reportRepository, $listingRepository, $userRepository);
+                        $controller = new $controllerNamespace($adminService, $reportService, $reportRepository);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
