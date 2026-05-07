@@ -84,6 +84,15 @@ class Router {
         $this->routes['GET']['/api/reviews/user/:id'] = ['ReviewController', 'getReviewsByUser'];
         $this->routes['GET']['/api/users/:id/stats'] = ['ReviewController', 'getUserStats'];
         
+        // Favorites endpoints (Phase 8)
+        $this->routes['POST']['/api/listings/:id/favorite'] = ['FavoritesController', 'toggleFavorite'];
+        $this->routes['GET']['/api/favorites'] = ['FavoritesController', 'getFavorites'];
+        
+        // Report endpoints (Phase 8)
+        $this->routes['POST']['/api/listings/:id/report'] = ['ReportController', 'reportListing'];
+        $this->routes['POST']['/api/users/:id/report'] = ['ReportController', 'reportUser'];
+        $this->routes['GET']['/api/admin/reports'] = ['ReportController', 'getReports'];
+        
         // Health check (Phase 1)
         $this->routes['GET']['/api/health'] = ['HealthController', 'check'];
     }
@@ -129,6 +138,11 @@ class Router {
             'BookingController:counterPickup',
             'BookingController:acceptPickup',
             'ReviewController:submitReview',
+            'FavoritesController:toggleFavorite',
+            'FavoritesController:getFavorites',
+            'ReportController:reportListing',
+            'ReportController:reportUser',
+            'ReportController:getReports',
         ];
         
         // Iterate through registered routes for this method
@@ -234,6 +248,20 @@ class Router {
                         );
 
                         $controller = new $controllerNamespace($reviewService, $reviewRepository, $bookingRepository);
+                    } elseif ($controllerClass === 'FavoritesController' && $this->pdo !== null) {
+                        // FavoritesController requires FavoritesService with its dependencies
+                        $favoriteRepository = new \ReuseIT\Repositories\FavoriteRepository($this->pdo);
+                        $listingRepository = new \ReuseIT\Repositories\ListingRepository($this->pdo);
+                        $userRepository = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $favoritesService = new \ReuseIT\Services\FavoritesService($favoriteRepository, $listingRepository, $userRepository);
+                        $controller = new $controllerNamespace($favoritesService);
+                    } elseif ($controllerClass === 'ReportController' && $this->pdo !== null) {
+                        // ReportController requires ReportService with its dependencies
+                        $reportRepository = new \ReuseIT\Repositories\ReportRepository($this->pdo);
+                        $listingRepository = new \ReuseIT\Repositories\ListingRepository($this->pdo);
+                        $userRepository = new \ReuseIT\Repositories\UserRepository($this->pdo);
+                        $reportService = new \ReuseIT\Services\ReportService($reportRepository, $listingRepository, $userRepository);
+                        $controller = new $controllerNamespace($reportService);
                     } else {
                         // Default controller instantiation (no dependencies)
                         $controller = new $controllerNamespace();
