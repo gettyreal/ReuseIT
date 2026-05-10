@@ -145,25 +145,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FE-CHAT-03 | Phase 15 | Pending |
 | FE-CHAT-04 | Phase 15 | Pending |
 | FE-CHAT-05 | Phase 15 | Pending |
-| FE-REV-01 | Phase 16 | Pending |
-| FE-REV-02 | Phase 16 | Pending |
-| FE-REV-03 | Phase 16 | Pending |
-| FE-FAV-01 | Phase 17 | Pending |
-| FE-FAV-02 | Phase 17 | Pending |
-| FE-FAV-03 | Phase 17 | Pending |
-| FE-ADMIN-01 | Phase 18 | Pending |
-| FE-ADMIN-02 | Phase 18 | Pending |
-| FE-ADMIN-03 | Phase 18 | Pending |
-| FE-UX-01 | Phase 19 | Pending |
-| FE-UX-02 | Phase 19 | Pending |
-| FE-UX-03 | Phase 19 | Pending |
-| FE-UX-04 | Phase 19 | Pending |
-| FE-UX-05 | Phase 19 | Pending |
+| FE-REV-01 | Phase 15 | Pending |
+| FE-REV-02 | Phase 10 | Pending |
+| FE-REV-03 | Phase 10 | Pending |
+| FE-FAV-01 | Phase 11 | Pending |
+| FE-FAV-02 | Phase 11 | Pending |
+| FE-FAV-03 | Phase 11 | Pending |
+| FE-ADMIN-01 | Phase 16 | Pending |
+| FE-ADMIN-02 | Phase 16 | Pending |
+| FE-ADMIN-03 | Phase 16 | Pending |
+| FE-UX-01 | Phase 16 | Pending |
+| FE-UX-02 | Phase 16 | Pending |
+| FE-UX-03 | Phase 16 | Pending |
+| FE-UX-04 | Phase 16 | Pending |
+| FE-UX-05 | Phase 9 | Pending |
 
 **Coverage:**
 - v2 requirements: 45 total
-- Mapped to phases: 0 (to be determined by roadmapper)
-- Unmapped: 45
+- Mapped to phases: 45 (100%)
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-10*

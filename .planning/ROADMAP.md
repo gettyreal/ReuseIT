@@ -16,9 +16,13 @@
 ## Phases
 
 <details open>
-<summary>📋 v2.0 UI & Features (In Planning)</summary>
+<summary>📋 v2.0 Frontend Implementation (Phases 9-16) — IN PLANNING</summary>
 
-To be defined during next milestone planning phase.
+**Phases:** 8 (Phases 9–16)  
+**Total Requirements:** 45  
+**Coverage:** 45/45 mapped ✓  
+
+The v2.0 Frontend Milestone implements a complete user-facing interface for the ReuseIT marketplace. The backend (v1.0) is complete and stable; this work focuses on consuming APIs through vanilla HTML/CSS/JavaScript interfaces, following Figma design specifications. Work is grouped into 8 phases emphasizing user journeys and minimal dependencies, allowing parallel development of discovery and management features.
 
 </details>
 
@@ -208,3 +212,228 @@ To be defined during next milestone planning phase.
 ---
 
 For detailed phase information, see archived roadmap: `.planning/milestones/v1.0-ROADMAP.md`
+
+---
+
+## v2.0 Frontend Implementation: Detailed Roadmap
+
+### Phase 9: Foundation & Authentication
+
+**Goal:** Establish frontend entry point with working authentication and reusable component infrastructure.
+
+**Depends on:** Nothing (foundational)
+
+**Requirements:** FE-AUTH-01, FE-AUTH-02, FE-AUTH-03, FE-AUTH-04, FE-UX-05
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User can register with email/password on a functional registration page with client-side validation
+2. User can log in with email/password and session persists across browser refresh
+3. User can reset forgotten password via email link simulation (frontend form + backend validation flow)
+4. User can log out and return to login page with session fully cleared
+5. Navigation header/sidebar visible and functional on all pages (root layout component)
+6. Vanilla CSS component library initialized with reusable patterns (buttons, forms, cards, notifications)
+
+---
+
+### Phase 10: Profiles & Reputation
+
+**Goal:** Enable users to view and edit their profiles, see reputation metrics, and discover reviews.
+
+**Depends on:** Phase 9 (auth must work)
+
+**Requirements:** FE-PROF-01, FE-PROF-02, FE-PROF-03, FE-PROF-04, FE-REV-02, FE-REV-03
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User can view own profile showing name, bio, location, avatar, and stats (active listings, completed sales, average rating)
+2. User can edit profile (name, bio, location) and save changes
+3. User can upload and view avatar on profile
+4. User can view another user's profile with their transaction statistics and review history
+5. User can see reviews/ratings list on profile with ratings breakdown (star distribution)
+6. User statistics dashboard shows active listings, completed sales count, and average rating from backend data
+
+---
+
+### Phase 11: Listing Discovery
+
+**Goal:** Provide users ability to browse, search, filter, and view detailed listing information.
+
+**Depends on:** Phase 9 (auth) + Phase 10 (profile display in seller info)
+
+**Requirements:** FE-LIST-01, FE-LIST-02, FE-LIST-03, FE-LIST-04, FE-FAV-01, FE-FAV-02, FE-FAV-03
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User can browse all listings in a grid/list view with toggle between display modes
+2. User can search listings by keyword, filter by category, price range, and condition
+3. User can view detailed listing page with all photos, full description, seller info, and action buttons
+4. User can add/remove listings from favorites (wishlist) with visual indicators
+5. User can view Favorites page showing all saved listings with ability to sort/filter
+6. Listings display includes seller profile link and average rating for trust-building
+
+---
+
+### Phase 12: Map & Location Discovery
+
+**Goal:** Enable geographic discovery with interactive map, distance filtering, and location-based search.
+
+**Depends on:** Phase 9 (auth) + Phase 11 (listing browsing to compare with map view)
+
+**Requirements:** FE-MAP-01, FE-MAP-02, FE-MAP-03, FE-MAP-04
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. Interactive Google Map displays all active listings as markers with listing preview on hover
+2. User can filter listings by distance radius (from user's location or search location)
+3. User can click marker to see listing preview and drill-down to full detail page
+4. User can search for a location address and map recenters to that location automatically
+5. Distance in kilometers displays on listings when browsing from map view
+
+---
+
+### Phase 13: Listing Management
+
+**Goal:** Enable users to create, edit, and manage their own listings.
+
+**Depends on:** Phase 9 (auth) + Phase 11 (listing detail view for reference)
+
+**Requirements:** FE-LMGMT-01, FE-LMGMT-02, FE-LMGMT-03, FE-LMGMT-04
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User can create listing with category, title, description, price, condition, and multiple photo uploads
+2. User can edit existing listing (update any field including photos)
+3. User can delete/cancel their own listing with confirmation dialog
+4. User can view "My Listings" page showing all own listings with current status (active, sold, delisted) and quick edit/delete actions
+5. Photo upload shows preview before saving with multiple file selection support
+
+---
+
+### Phase 14: Booking Workflow
+
+**Goal:** Implement complete booking lifecycle from creation through completion with negotiation.
+
+**Depends on:** Phase 11 (listing detail where booking starts) + Phase 9 (auth)
+
+**Requirements:** FE-BOOK-01, FE-BOOK-02, FE-BOOK-03, FE-BOOK-04, FE-BOOK-05, FE-BOOK-06
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User (buyer) can create booking for a listing with initial booking form (creates conversation with seller)
+2. User can view "My Bookings" page with separate Buyer and Seller views, filtered by role
+3. User can view booking detail page showing status (pending/confirmed/completed), item info, and next action hints
+4. Buyer can propose pickup date/time and seller receives negotiation request
+5. Seller can accept proposal, reject, or submit counter-proposal with different date/time
+6. User can confirm booking completion and trigger review prompt (leads to Phase 15 chat)
+
+---
+
+### Phase 15: Chat & Messaging
+
+**Goal:** Enable direct communication between buyers and sellers through conversations and messages.
+
+**Depends on:** Phase 14 (booking creates conversations) + Phase 9 (auth)
+
+**Requirements:** FE-CHAT-01, FE-CHAT-02, FE-CHAT-03, FE-CHAT-04, FE-CHAT-05, FE-REV-01
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. User can view Conversations list page showing all active conversations (one per booking) with most recent message preview
+2. User can open a conversation to see full message history sorted chronologically
+3. User can type and send messages in real-time (manual refresh/polling model, no WebSockets)
+4. User sees unread message indicators (badge count, visual highlight) on conversation list and detail
+5. Chat interface supports message pagination/loading earlier messages
+6. User can submit a review (1-5 stars + comment) after booking completion from chat or booking detail page
+
+---
+
+### Phase 16: Admin & Polish
+
+**Goal:** Provide admin moderation tools and finalize UX/form handling across all pages.
+
+**Depends on:** Phase 9 (auth) + all previous phases (cross-cutting)
+
+**Requirements:** FE-ADMIN-01, FE-ADMIN-02, FE-ADMIN-03, FE-UX-01, FE-UX-02, FE-UX-03, FE-UX-04
+
+**Success Criteria** (what must be TRUE when phase completes):
+1. Admin user can access moderation dashboard showing reported listings and users
+2. Admin can view reported content and take moderation actions (remove listing, suspend user)
+3. All pages display loading spinners and states during API calls (no frozen UI)
+4. Form validation (auth, profile, listing, booking, chat) provides real-time feedback and prevents invalid submissions
+5. Error messages display consistently across pages (API errors, validation errors, network errors)
+6. Desktop layout is responsive and functional at 1024px+ with proper spacing and typography
+
+---
+
+## v2.0 Progress Table
+
+| Phase | Goal | Requirements | Success Criteria | Plans Complete | Status |
+|-------|------|--------------|------------------|-----------------|--------|
+| 9 | Foundation & Auth | 5 | 6 | 0/TBD | Not started |
+| 10 | Profiles & Reputation | 6 | 6 | 0/TBD | Not started |
+| 11 | Listing Discovery | 7 | 6 | 0/TBD | Not started |
+| 12 | Map & Location | 4 | 5 | 0/TBD | Not started |
+| 13 | Listing Management | 4 | 5 | 0/TBD | Not started |
+| 14 | Booking Workflow | 6 | 6 | 0/TBD | Not started |
+| 15 | Chat & Messaging | 7 | 6 | 0/TBD | Not started |
+| 16 | Admin & Polish | 8 | 6 | 0/TBD | Not started |
+| **TOTAL** | **8 phases** | **45 requirements** | **46 criteria** | **0/TBD** | **Planning** |
+
+---
+
+## v2.0 Architecture Notes
+
+**Frontend Structure:**
+- Single-page application (SPA) with client-side routing via URL hash (#/path)
+- HTML template files for each page/view
+- Vanilla CSS component library (buttons, forms, cards, modals, notifications)
+- localStorage for auth token, user preferences, draft recovery
+- localStorage for unread message tracking and favorites state
+
+**Component Library (grows throughout phases):**
+- Phase 9: Buttons, forms, headers, navigation, modals
+- Phase 10: Profile cards, stats displays, review ratings
+- Phase 11: Listing cards, grids, filters, search inputs
+- Phase 12: Map controls, markers, location search
+- Phase 13: Photo uploader, listing form, status badges
+- Phase 14: Booking detail, negotiation UI, timeline
+- Phase 15: Chat bubbles, message input, unread indicators
+- Phase 16: Admin tables, error alerts, loading states, form validation UI
+
+**API Integration Pattern:**
+- Each page has fetch() calls to v1.0 endpoints
+- Error handling with user-friendly messages
+- Loading states prevent UI freezing
+- No abstraction layer (direct fetch, keep it simple)
+
+**State Management:**
+- localStorage for persistent auth token and session
+- Form state in component memory (not persisted)
+- Unread message counts in localStorage
+- Favorites in localStorage + synced to backend
+
+**Design Integration:**
+- Figma tokens extracted via One CLI for:
+  - Color palette (primary, secondary, states)
+  - Typography (sizes, weights, line heights)
+  - Spacing scale (4px, 8px, 16px, etc.)
+  - Border radius, shadows, transitions
+- CSS custom properties (variables) for easy theming
+
+---
+
+## v2.0 Dependency Graph
+
+```
+Phase 9 (Auth, Nav, Component Library)
+    ↓
+    ├─→ Phase 10 (Profiles) ──────┐
+    │                             ├─→ Phase 11 (Listing Discovery) ──┐
+    ├─→ Phase 11 (Listing Browse) ┘                                 ├─→ Phase 14 (Booking)
+    │                                                                │
+    ├─→ Phase 12 (Map)  ───────────→ Phase 11 (Discovery context)  ├─→ Phase 15 (Chat + Reviews)
+    │                                                                │
+    └─→ Phase 13 (Listing Create)  ─→ Phase 14 (Booking)           └─→ Phase 16 (Admin + UX)
+                                           ↓
+                                      Phase 15 (Chat)
+```
+
+**Parallelization Opportunities:**
+- Phase 10 (Profiles) and Phase 13 (Listing Management) can start in parallel after Phase 9
+- Phase 11 (Discovery) and Phase 12 (Map) are largely parallel (shared listing display)
+- Phase 15 (Chat) can start after Phase 14 begins (conversations already created)
+- Phase 16 (Polish) can overlap with earlier phases as cross-cutting concern
