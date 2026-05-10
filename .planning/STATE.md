@@ -68,12 +68,12 @@ None
 
 ## Next Steps
 
-1. `/gsd-plan-phase 9` — Break Phase 9 (Foundation & Auth) into executable plans
-2. Extract Figma design tokens via One CLI during Phase 9 planning
-3. Set up component library CSS structure
-4. Implement auth UI with form validation
-5. Build navigation and layout components
-6. Create STATE.md checkpoints for phase completion
+1. ✅ `/gsd-plan-phase 9` — Phase 9 (Foundation & Auth) planned (3 plans: foundation, auth pages, logout)
+2. `/gsd-execute-phase 9` — Execute Phase 9 plans (estimated 2-3 days)
+   - Wave 1: Plan 01 (component library), Plan 02 (auth pages) — can run parallel
+   - Wave 2: Plan 03 (logout + session) — depends on Wave 1
+3. After Phase 9: Move to Phase 10 (Profiles & Reputation) planning
+4. Phase 9 will establish CSS component library that all subsequent phases reuse
 
 ---
 *Roadmap created: 2026-05-10*  
