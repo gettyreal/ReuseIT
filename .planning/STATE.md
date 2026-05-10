@@ -57,7 +57,7 @@
 - **Phase 7 (Reviews):** 5 requirements (reputation)
 - **Phase 8 (Polish):** 9 requirements (favorites + admin + error handling)
 
-**Status:** Milestone complete
+**Status:** v1.0 milestone complete
 
 ## Phase Readiness
 
