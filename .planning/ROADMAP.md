@@ -1,8 +1,8 @@
 # ReuseIT Development Roadmap
 
 **Last Updated:** 2026-05-11  
-**Current Status:** v1.0 Shipped (Phases 1-8) | v2.0 In Progress (Phase 9, Plan 02 Complete)
-**Next Milestone:** Phase 09 Plan 03 - Session & Logout
+**Current Status:** v1.0 Shipped (Phases 1-8) | v2.0 In Progress (Phase 9 Complete, ready for Phase 10)
+**Next Milestone:** Phase 10 (Profiles & Reputation) planning
 
 ---
 
@@ -16,12 +16,12 @@
 ## Phases
 
 <details open>
-<summary>📋 v2.0 Frontend Implementation (Phases 9-16) — IN PROGRESS (Plan 09-02 Complete)</summary>
+<summary>📋 v2.0 Frontend Implementation (Phases 9-16) — IN PROGRESS (Phase 9 Complete)</summary>
 
 **Phases:** 8 (Phases 9–16)  
 **Total Requirements:** 45  
 **Coverage:** 45/45 mapped ✓  
-**Progress:** Phase 9 (2/3 plans complete - Component Library & Auth Pages)  
+**Progress:** Phase 9 (3/3 plans complete - Foundation & Auth) ✓ Ready for Phase 10  
 
 The v2.0 Frontend Milestone implements a complete user-facing interface for the ReuseIT marketplace. The backend (v1.0) is complete and stable; this work focuses on consuming APIs through vanilla HTML/CSS/JavaScript interfaces, following Figma design specifications. Work is grouped into 8 phases emphasizing user journeys and minimal dependencies, allowing parallel development of discovery and management features.
 
@@ -39,7 +39,12 @@ The v2.0 Frontend Milestone implements a complete user-facing interface for the 
 - Auth-specific CSS styling (217 lines, 24 selectors)
 - Router extended with reset-password and reset-password-confirm routes
 
-</details>
+**Plan 09-03 (Complete):** Session & Logout
+- Logout functionality with fail-safe pattern (server API call, then client cleanup)
+- Token validation on app initialization with stale session detection
+- Protected route checking with 9 protected routes enforcement
+- Dynamic header navigation reflecting authentication state
+- Complete auth system ready for Phase 10 (Profiles & Reputation)</details>
 
 <details>
 <summary>✅ v1.0 MVP (Phases 1-8) — SHIPPED 2026-05-10</summary>
