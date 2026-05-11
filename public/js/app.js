@@ -8,34 +8,45 @@ const app = {
   user: null,
   
   /**
-   * Initialize the app
-   * - Check authentication status
-   * - Set up router listeners
-   * - Navigate to initial page
-   */
+    * Initialize the app
+    * - Check authentication status
+    * - Validate token with backend
+    * - Set up router listeners
+    * - Navigate to initial page
+    */
   async init() {
-    console.log('App initialized');
+    console.log('App initializing...');
     
-    // Check if user is logged in by verifying token
+    // Read token from localStorage
+    this.token = localStorage.getItem('token');
+    
+    // If user is logged in, validate token with backend
     if (this.token) {
       try {
-        const response = await fetch('http://localhost:8000/api/auth/validate', {
-          headers: { 'Authorization': `Bearer ${this.token}` }
-        });
+        const response = await this.apiCall('GET', '/api/auth/validate');
         
-        if (!response.ok) {
-          console.warn('Token validation failed, logging out');
-          this.logout();
+        if (response.ok) {
+          // Token is valid, load user data
+          const data = await response.json();
+          this.user = data.user;
+          console.log('Token validated, user logged in:', this.user.email);
+        } else {
+          // Token is invalid or expired
+          console.warn('Token validation failed:', response.status);
+          this.logout(); // Force logout
           return;
         }
-        
-        this.user = await response.json();
-        console.log('User authenticated:', this.user);
       } catch (e) {
-        console.error('Token validation failed:', e);
-        this.logout();
+        console.error('Token validation error:', e);
+        // On network error, trust the token (user might be offline)
+        // Only logout if we get a clear 401/403 response
       }
+    } else {
+      console.log('No token found, user is not logged in');
     }
+    
+    // Update header based on auth state
+    this.updateHeader();
     
     // Set up hash-based router
     this.setupRouter();
@@ -61,18 +72,31 @@ const app = {
   },
   
   /**
-   * Navigate to a page
-   * - Check if route is protected
-   * - Redirect to login if not authenticated
-   * - Load page content
-   */
+    * Navigate to a page
+    * - Check if route is protected
+    * - Redirect to login if not authenticated
+    * - Load page content
+    */
   navigate(path) {
-    // Define protected routes (require authentication)
-    const protectedRoutes = ['profile', 'my-listings', 'bookings', 'chat', 'favorites'];
+    // Define which routes require authentication
+    const protectedRoutes = [
+      'profile',
+      'edit-profile',
+      'my-listings',
+      'create-listing',
+      'edit-listing',
+      'bookings',
+      'chat',
+      'favorites',
+      'reviews'
+    ];
     
-    // Check if trying to access protected route without token
-    if (protectedRoutes.some(r => path.startsWith(r)) && !this.token) {
-      console.log('Protected route accessed without token, redirecting to login');
+    // Check if this route requires authentication
+    const isProtected = protectedRoutes.some(route => path.startsWith(route));
+    
+    // If route is protected and user is not logged in, redirect to login
+    if (isProtected && !this.token) {
+      console.warn('Attempted to access protected route without auth:', path);
       window.location.hash = '#/login';
       return;
     }
@@ -331,32 +355,76 @@ const app = {
   },
   
   // ===== AUTHENTICATION =====
-  
+
   /**
-   * Clear local authentication state
-   * Remove token and redirect to login
-   */
+    * Clear local authentication state
+    * Remove token, user data, and redirect to login
+    */
   logout() {
+    // Clear all localStorage auth data
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Clear app state
     this.token = null;
     this.user = null;
-    console.log('Logged out');
+    this.currentPage = null;
+    
+    // Update header to show logged-out navigation
+    this.updateHeader();
+    
+    // Redirect to login
     window.location.hash = '#/login';
+    
+    console.log('Logged out successfully');
   },
-  
+
   /**
-   * Handle logout action (API call + local state cleanup)
-   */
+    * Handle logout action (API call + local state cleanup)
+    * Called when user navigates to #/logout
+    */
   async handleLogout() {
     try {
-      // Notify backend of logout
-      await this.apiCall('POST', '/api/auth/logout');
+      // Call backend logout endpoint to clear server-side session
+      const response = await this.apiCall('POST', '/api/auth/logout');
+      
+      if (!response.ok) {
+        console.warn('Server logout failed, clearing client-side session anyway');
+      }
     } catch (e) {
-      console.warn('Logout API call failed (user may already be logged out):', e);
+      console.error('Error calling logout endpoint:', e);
+      // Continue with client-side logout even if API call fails
     }
     
-    // Clear local state regardless of API result
+    // Clear client-side session
     this.logout();
+  },
+
+  /**
+    * Update header navigation based on authentication state
+    * Shows authenticated nav when logged in, guest nav when logged out
+    */
+  updateHeader() {
+    const headerNav = document.querySelector('.header-nav');
+    
+    if (this.token && this.user) {
+      // User is logged in, show authenticated nav
+      headerNav.innerHTML = `
+        <a href="#/">Home</a>
+        <a href="#/profile">Profile</a>
+        <a href="#/my-listings">My Listings</a>
+        <a href="#/chat">Messages</a>
+        <a href="#/favorites">Favorites</a>
+        <a href="#/logout">Logout</a>
+      `;
+    } else {
+      // User is not logged in, show guest nav
+      headerNav.innerHTML = `
+        <a href="#/">Home</a>
+        <a href="#/login">Login</a>
+        <a href="#/register">Register</a>
+      `;
+    }
   }
 };
 
