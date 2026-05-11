@@ -3,9 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReuseIT</title>
+    <title>ReuseIT - Peer-to-Peer Electronics Marketplace</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <style>
+      body { 
+        font-family: var(--font-family-base);
+        background-color: var(--color-bg);
+        color: var(--color-text);
+      }
+      
+      .app-container {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        grid-template-rows: 60px 1fr;
+        min-height: 100vh;
+        gap: 0;
+      }
+      
+      header { 
+        grid-column: 1 / -1;
+        grid-row: 1;
+        border-bottom: 1px solid var(--color-border);
+      }
+      
+      nav.sidebar { 
+        grid-column: 1;
+        grid-row: 2;
+        border-right: 1px solid var(--color-border);
+        background-color: var(--color-bg-secondary);
+      }
+      
+      main { 
+        grid-column: 2;
+        grid-row: 2;
+        overflow-y: auto;
+      }
+      
+      @media (max-width: 768px) {
+        /* Mobile responsive design deferred to v2.1 */
+        .app-container {
+          grid-template-columns: 1fr;
+          grid-template-rows: 60px auto 1fr;
+        }
+        
+        nav.sidebar {
+          grid-column: 1;
+          grid-row: 2;
+          border-right: none;
+          border-bottom: 1px solid var(--color-border);
+        }
+        
+        main {
+          grid-column: 1;
+          grid-row: 3;
+        }
+      }
+    </style>
 </head>
 <body>
-    <H1>ReuseIT</H1>
+    <div class="app-container">
+        <!-- Header with Logo and Navigation -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="logo"><a href="#/">ReuseIT</a></h1>
+                <nav class="header-nav">
+                    <a href="#/">Home</a>
+                    <a href="#/profile">Profile</a>
+                    <a href="#/favorites">Favorites</a>
+                    <a href="#/logout" class="logout-link">Logout</a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#/">Browse Listings</a></li>
+                <li><a href="#/map">Map View</a></li>
+                <li><a href="#/my-listings">My Listings</a></li>
+                <li><a href="#/bookings">My Bookings</a></li>
+                <li><a href="#/chat">Messages</a></li>
+                <li><a href="#/favorites">Favorites</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main id="app">
+            <!-- Page content will be rendered here by router -->
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/app.js"></script>
 </body>
 </html>
