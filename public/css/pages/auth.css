@@ -1,0 +1,217 @@
+/* Auth page styling */
+
+/* Container for auth pages */
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 40px;
+  padding: 0 var(--spacing-16);
+}
+
+/* Form styling specific to auth */
+#registerForm,
+#loginForm,
+#resetForm,
+#resetConfirmForm {
+  width: 100%;
+}
+
+/* Card styling for auth forms */
+.card {
+  margin-bottom: var(--spacing-24);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-24);
+  color: var(--color-text);
+  text-align: center;
+  font-weight: 600;
+}
+
+.card p {
+  color: var(--color-text-light);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--spacing-16);
+  font-size: var(--font-size-sm);
+}
+
+/* Form links */
+.card a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+/* Message display (success/error alerts) */
+#registerMessage,
+#loginMessage,
+#resetMessage,
+#resetConfirmMessage,
+#resetError,
+#resetConfirmError {
+  margin-bottom: var(--spacing-16);
+}
+
+/* Validation error styling */
+.form-group .error-message {
+  display: none;
+  min-height: 20px;
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-4);
+}
+
+/* Form input focus state improvements */
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  outline: none;
+}
+
+input.form-error:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Button styling */
+.btn {
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading state */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Checkbox styling */
+label input[type="checkbox"] {
+  margin-right: var(--spacing-8);
+  cursor: pointer;
+}
+
+label input[type="checkbox"]:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Alert styles for messages */
+.alert {
+  padding: var(--spacing-16);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-16);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.d-none {
+  display: none;
+}
+
+/* Form group styling */
+.form-group {
+  margin-bottom: var(--spacing-16);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-8);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: var(--spacing-8) var(--spacing-12);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* Button styling within forms */
+.form-group button {
+  width: 100%;
+  padding: var(--spacing-10) var(--spacing-16);
+  margin-top: var(--spacing-8);
+}
+
+/* Spinner animation for loading states */
+.spinner {
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.6s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments (deferred for v2.1) */
+@media (max-width: 768px) {
+  .card {
+    margin-left: var(--spacing-16);
+    margin-right: var(--spacing-16);
+    padding: var(--spacing-16);
+  }
+
+  .card h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-16);
+  }
+}
