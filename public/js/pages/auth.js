@@ -168,6 +168,8 @@ app.showRegister = function() {
         localStorage.setItem('token', data.token);
         app.token = data.token;
         app.user = data.user;
+        // Update header navigation
+        app.updateHeader();
         // Redirect to home
         window.location.hash = '#/';
       } else {
@@ -287,6 +289,8 @@ app.showLogin = function() {
         localStorage.setItem('token', data.token);
         app.token = data.token;
         app.user = data.user;
+        // Update header navigation
+        app.updateHeader();
         // Redirect to home
         window.location.hash = '#/';
       } else {
