@@ -1,8 +1,8 @@
 # ReuseIT Development Roadmap
 
-**Last Updated:** 2026-05-10  
-**Current Status:** v1.0 Shipped (Phases 1-8)  
-**Next Milestone:** v2.0 UI & Features (planned)
+**Last Updated:** 2026-05-11  
+**Current Status:** v1.0 Shipped (Phases 1-8) | v2.0 In Progress (Phase 9, Plan 01 Complete)
+**Next Milestone:** Phase 09 Plan 02 - Auth Pages & Login Forms
 
 ---
 
@@ -16,13 +16,21 @@
 ## Phases
 
 <details open>
-<summary>📋 v2.0 Frontend Implementation (Phases 9-16) — IN PLANNING</summary>
+<summary>📋 v2.0 Frontend Implementation (Phases 9-16) — IN PROGRESS (Plan 09-01 Complete)</summary>
 
 **Phases:** 8 (Phases 9–16)  
 **Total Requirements:** 45  
 **Coverage:** 45/45 mapped ✓  
+**Progress:** Phase 9 (1/3 plans complete - Component Library & Navigation Foundation)  
 
 The v2.0 Frontend Milestone implements a complete user-facing interface for the ReuseIT marketplace. The backend (v1.0) is complete and stable; this work focuses on consuming APIs through vanilla HTML/CSS/JavaScript interfaces, following Figma design specifications. Work is grouped into 8 phases emphasizing user journeys and minimal dependencies, allowing parallel development of discovery and management features.
+
+**Plan 09-01 (Complete):** Component Library & Navigation Foundation
+- 62 CSS design tokens (colors, spacing, typography, shadows, transitions)
+- 102+ reusable component classes (buttons, forms, cards, alerts, modals, spinners)
+- Root layout with header/sidebar navigation structure
+- Client-side SPA router with hash-based navigation and protected routes
+- localStorage token management and API call helpers
 
 </details>
 
@@ -363,7 +371,7 @@ For detailed phase information, see archived roadmap: `.planning/milestones/v1.0
 
 | Phase | Goal | Requirements | Success Criteria | Plans Complete | Status |
 |-------|------|--------------|------------------|-----------------|--------|
-| 9 | Foundation & Auth | 5 | 6 | 0/TBD | Not started |
+| 9 | Foundation & Auth | 5 | 6 | 1/3 | In Progress ✓ Plan 01 |
 | 10 | Profiles & Reputation | 6 | 6 | 0/TBD | Not started |
 | 11 | Listing Discovery | 7 | 6 | 0/TBD | Not started |
 | 12 | Map & Location | 4 | 5 | 0/TBD | Not started |
