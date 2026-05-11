@@ -129,8 +129,8 @@ const app = {
       } else if (path.startsWith('reset-password-confirm')) {
         const token = new URLSearchParams(window.location.search).get('token');
         this.showResetPasswordConfirm(token);
-      } else if (path === 'profile') {
-        this.showProfile();
+      } else if (path === 'profile' || path.startsWith('profile/')) {
+        showProfile();
       } else if (path === 'favorites') {
         this.showFavorites();
       } else if (path === 'my-listings') {
@@ -233,21 +233,6 @@ const app = {
         <div class="card">
           <p>Registration form will be implemented in Plan 09-02.</p>
           <a href="#/login" class="btn btn-secondary mt-16">Sign In</a>
-        </div>
-      </div>
-    `;
-  },
-  
-  showProfile() {
-    const appDiv = document.getElementById('app');
-    appDiv.innerHTML = `
-      <div class="page">
-        <div class="page-header">
-          <h1 class="page-title">Profile</h1>
-          <p class="page-subtitle">View and edit your profile</p>
-        </div>
-        <div class="card">
-          <p>Profile page will be implemented in Phase 10.</p>
         </div>
       </div>
     `;
