@@ -130,7 +130,9 @@ const app = {
         const token = new URLSearchParams(window.location.search).get('token');
         this.showResetPasswordConfirm(token);
       } else if (path === 'profile' || path.startsWith('profile/')) {
-        showProfile();
+        // Handle both #/profile (own profile) and #/profile/123 (other users)
+        const userId = path.split('/')[1]; // Extract userId if present
+        showProfile(userId);
       } else if (path === 'favorites') {
         this.showFavorites();
       } else if (path === 'my-listings') {
