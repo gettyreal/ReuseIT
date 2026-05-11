@@ -100,6 +100,11 @@ const app = {
         this.showLogin();
       } else if (path === 'register') {
         this.showRegister();
+      } else if (path === 'reset-password') {
+        this.showResetPassword();
+      } else if (path.startsWith('reset-password-confirm')) {
+        const token = new URLSearchParams(window.location.search).get('token');
+        this.showResetPasswordConfirm(token);
       } else if (path === 'profile') {
         this.showProfile();
       } else if (path === 'favorites') {
