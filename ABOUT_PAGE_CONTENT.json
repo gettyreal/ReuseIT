@@ -1,0 +1,329 @@
+{
+  "page": {
+    "name": "About Us",
+    "dimensions": {
+      "width": 1280,
+      "height": 3607
+    },
+    "project": "Digital Forester / ReuseIT",
+    "language": "Italian"
+  },
+  "sections": [
+    {
+      "id": 1,
+      "name": "Top Navigation Bar",
+      "type": "Navigation",
+      "height": 68,
+      "yPosition": 0,
+      "backgroundColor": "white",
+      "components": [
+        "Logo/Branding",
+        "Navigation Links",
+        "Primary CTA Button"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Hero Section",
+      "type": "Hero",
+      "height": 636,
+      "yPosition": 96,
+      "backgroundColor": "#F9F9F8",
+      "backgroundGradient": "radial-gradient (#D0E3D8 -> transparent)",
+      "content": {
+        "label": "MANIFESTO 01.0",
+        "labelColor": "#4E635A",
+        "heading": "Ingegnerizzare un'economia circolare per l'era digitale.",
+        "headingColor": "#002619",
+        "description": "Crediamo che la tecnologia ad alte prestazioni non debba costare il pianeta. Digital Forester è il ponte tra l'ingegneria di precisione e la tutela dell'ambiente.",
+        "descriptionColor": "#414944"
+      },
+      "layout": "Text-centered with gradient background"
+    },
+    {
+      "id": 3,
+      "name": "Our Mission: Asymmetric Layout",
+      "type": "Feature Section",
+      "height": 688.75,
+      "yPosition": 732,
+      "backgroundColor": "#FFFFFF",
+      "content": {
+        "heading": "La Nostra Missione",
+        "headingColor": "#002619",
+        "mainStatement": "Ogni anno vengono scartati milioni di tonnellate di elettronica, eppure la maggior parte mantiene il 90% della sua utilità. La nostra missione è intercettare questo flusso di rifiuti, ricondizionando e ricollocando dispositivi premium con la cura di un artigiano digitale.",
+        "pillars": [
+          {
+            "title": "Carbon Neutral",
+            "titleColor": "#002619",
+            "description": "Ogni transazione è compensata tramite riforestazione certificata.",
+            "descriptionColor": "#414944"
+          },
+          {
+            "title": "Integrità Tecnica",
+            "titleColor": "#002619",
+            "description": "Rigorosi piani tecnici in 50 punti per ogni dispositivo.",
+            "descriptionColor": "#414944"
+          },
+          {
+            "title": "Conservation Commitment",
+            "titleColor": "#002619",
+            "description": "Non siamo solo un marketplace; siamo un impegno di conservazione. Estendendo il ciclo di vita del silicio e dei minerali rari, riduciamo la domanda di estrazioni distruttive e di produzione ad alta intensità di carbonio.",
+            "descriptionColor": "#414944"
+          }
+        ]
+      },
+      "layout": "Asymmetric - text left, visual right"
+    },
+    {
+      "id": 4,
+      "name": "Impact Statistics: Bento Grid",
+      "type": "Statistics Section",
+      "height": 644,
+      "yPosition": 1420.75,
+      "backgroundColor": "#FFFFFF",
+      "content": {
+        "heading": "IMPATTO",
+        "headingColor": "#002619"
+      },
+      "cards": [
+        {
+          "type": "large-card",
+          "metric": "RIFIUTI CUMULATIVI RISPARMIATI",
+          "metricColor": "#B5EDD7",
+          "number": "142k",
+          "numberColor": "#FFFFFF",
+          "description": "Chilogrammi di rifiuti elettronici sottratti alle discariche.",
+          "descriptionColor": "#A0D4C4",
+          "backgroundColor": "#79A894"
+        },
+        {
+          "type": "small-card",
+          "metric": "ALBERI PIANTATI",
+          "metricColor": "#4E635A",
+          "number": "12,400+",
+          "numberColor": "#002619",
+          "description": "Ripristino della biodiversità in biomi forestali critici.",
+          "descriptionColor": "#414944"
+        },
+        {
+          "type": "small-card",
+          "metric": "CO2 COMPENSATA",
+          "metricColor": "#52656E",
+          "number": "3.8M",
+          "numberColor": "#002619",
+          "description": "Tonnellate di emissioni di carbonio evitate attraverso il riutilizzo.",
+          "descriptionColor": "#52656E"
+        },
+        {
+          "type": "medium-card",
+          "metric": "CONSERVAZIONE REGIONALE",
+          "metricColor": "#FFFFFF",
+          "number": "+9",
+          "numberColor": "#FFFFFF",
+          "description": "Espandiamo la nostra impronta in 12 paesi.",
+          "descriptionColor": "#414944"
+        }
+      ],
+      "layout": "4-card bento grid (1 large, 2 small, 1 medium)"
+    },
+    {
+      "id": 5,
+      "name": "How It Works: Step Process",
+      "type": "Process Section",
+      "height": 722,
+      "yPosition": 2064.75,
+      "backgroundColor": "#FFFFFF",
+      "content": {
+        "heading": "Il Ciclo della Sostenibilità",
+        "headingColor": "#002619",
+        "tagline": "Semplice, trasparente e tecnicamente impeccabile.",
+        "taglineColor": "#414944"
+      },
+      "steps": [
+        {
+          "number": "01",
+          "numberColor": "#002619",
+          "action": "Vendi (Sell)",
+          "actionColor": "#002619",
+          "description": "Inviaci il tuo hardware datato. Forniamo valutazioni immediate e distruzione sicura dei dati come protocollo standard.",
+          "descriptionColor": "#414944"
+        },
+        {
+          "number": "02",
+          "numberColor": "#002619",
+          "action": "Vendi (Refurbish)",
+          "actionColor": "#002619",
+          "description": "I nostri tecnici eseguono aggiornamenti chirurgici, sostituendo batterie e componenti termici per superare le specifiche originali.",
+          "descriptionColor": "#414944"
+        },
+        {
+          "number": "03",
+          "numberColor": "#002619",
+          "action": "Vendi (Buy)",
+          "actionColor": "#002619",
+          "description": "Acquista dispositivi ad alte prestazioni a una frazione del costo — monetario e ambientale. Pronti per una seconda vita.",
+          "descriptionColor": "#414944"
+        }
+      ],
+      "layout": "3-step horizontal flow with numbered badges"
+    },
+    {
+      "id": 6,
+      "name": "Call-to-Action Section",
+      "type": "CTA",
+      "height": 490,
+      "yPosition": 2786.75,
+      "backgroundColor": "#79A894",
+      "content": {
+        "heading": "Pronto a unirti alla foresta?",
+        "headingColor": "#FFFFFF",
+        "quote": "La tecnologia è una risorsa, non un bene usa e getta.",
+        "quoteColor": "#366A5E"
+      },
+      "ctas": [
+        {
+          "text": "Sfoglia il Marketplace",
+          "action": "navigate-to-marketplace"
+        },
+        {
+          "text": "Ricicla un Dispositivo",
+          "action": "open-recycle-form"
+        }
+      ],
+      "layout": "Full-width colored section with centered text and CTAs"
+    },
+    {
+      "id": 7,
+      "name": "Footer",
+      "type": "Footer",
+      "height": 160,
+      "backgroundColor": "#FFFFFF",
+      "content": {
+        "brandName": "Digital Forester",
+        "copyright": "© 2024 Digital Forester. Ingegnerizzare un Futuro Sostenibile."
+      },
+      "links": {
+        "legal": [
+          "Rapporto di Sostenibilità",
+          "Termini di Servizio",
+          "Informativa sulla Privacy",
+          "Supporto Clienti"
+        ],
+        "navigation": [
+          "Marketplace",
+          "Chi Siamo",
+          "Vendi"
+        ]
+      }
+    }
+  ],
+  "colorPalette": {
+    "primary_brand_green": {
+      "rgb": "rgb(0, 38, 27)",
+      "hex": "#002619",
+      "usage": "Headings, primary accents, CTAs"
+    },
+    "secondary_green": {
+      "rgb": "rgb(65, 99, 90)",
+      "hex": "#41635A",
+      "usage": "Body text, secondary elements, labels"
+    },
+    "accent_mint": {
+      "rgb": "rgb(121, 168, 148)",
+      "hex": "#79A894",
+      "usage": "Stat card backgrounds, primary accent color"
+    },
+    "light_mint": {
+      "rgb": "rgb(188, 237, 215)",
+      "hex": "#BCEDD7",
+      "usage": "Light backgrounds, secondary stats labels"
+    },
+    "text_gray": {
+      "rgb": "rgb(65, 73, 68)",
+      "hex": "#414944",
+      "usage": "Body copy, descriptions, regular text"
+    },
+    "background_beige": {
+      "rgb": "rgb(249, 249, 248)",
+      "hex": "#F9F9F8",
+      "usage": "Hero section background, subtle contrast backgrounds"
+    },
+    "white": {
+      "rgb": "rgb(255, 255, 255)",
+      "hex": "#FFFFFF",
+      "usage": "Main backgrounds, cards, text on colored backgrounds"
+    }
+  },
+  "typography": {
+    "fontFamily": "Inter",
+    "weights": {
+      "regular": 400,
+      "bold": 700
+    },
+    "scales": {
+      "manifesto_label": {
+        "weight": 400,
+        "style": "uppercase",
+        "color": "#41635A"
+      },
+      "hero_heading": {
+        "weight": 700,
+        "style": "display/serif",
+        "color": "#002619"
+      },
+      "section_heading": {
+        "weight": 700,
+        "color": "#002619"
+      },
+      "body_text": {
+        "weight": 400,
+        "fontSize": "16px",
+        "color": "#414944"
+      },
+      "stat_number": {
+        "weight": 700,
+        "style": "display",
+        "color": "#FFFFFF"
+      },
+      "stat_label": {
+        "weight": 400,
+        "style": "uppercase",
+        "color": "#79A894"
+      },
+      "step_number": {
+        "weight": 700,
+        "style": "display",
+        "color": "#002619"
+      }
+    }
+  },
+  "layout": {
+    "pageWidth": 1280,
+    "gridColumns": 12,
+    "contentPadding": "symmetrical",
+    "sectionPattern": "full-width with 1280px content container"
+  },
+  "assetRequirements": {
+    "images": [
+      {
+        "location": "Hero Section",
+        "description": "Premium refurbished laptop/device image",
+        "style": "Product photography with drop shadow"
+      },
+      {
+        "location": "Mission Section",
+        "description": "Device refurbishment cycle visualization",
+        "style": "Process flow or product transformation"
+      }
+    ],
+    "icons": [
+      "Carbon Neutral certification badge",
+      "Technical Integrity quality badge",
+      "Environmental/sustainability indicators"
+    ],
+    "badges": [
+      "Step number indicators (01, 02, 03)",
+      "Stats metric badges"
+    ]
+  }
+}

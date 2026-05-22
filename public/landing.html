@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReuseIT - La Tua Tecnologia, Reimmaginata</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+           ============================================ */
+        :root {
+            /* Primary Colors */
+            --color-primary-dark: #00261B;
+            --color-primary-brand: #0B3D2E;
+            --color-primary-light: #BCEDD7;
+
+            /* Neutral Colors */
+            --color-bg-primary: #FFFFFF;
+            --color-bg-secondary: #F9F9F8;
+            --color-bg-tertiary: #F3F4F3;
+            --color-bg-quaternary: #EDEEED;
+            --color-bg-input: #E7E8E7;
+            --color-bg-light: #E1E3E2;
+
+            /* Text Colors */
+            --color-text-primary: #414944;
+            --color-text-secondary: #4E635A;
+            --color-text-tertiary: #52675E;
+            --color-text-placeholder: #6B7280;
+            --color-text-light: #C0C8C3;
+
+            /* Typography */
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+
+            /* Spacing */
+            --spacing-xs: 6px;
+            --spacing-sm: 12px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 40px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-2xl: 32px;
+            --radius-3xl: 40px;
+
+            /* Shadows */
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ============================================
+           GLOBAL STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text-primary);
+            background-color: var(--color-bg-secondary);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           BUTTON STYLES
+           ============================================ */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            font-family: var(--font-body);
+            font-size: 18px;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary-dark);
+            color: var(--color-bg-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-brand);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-secondary {
+            background-color: #CEE5DA;
+            color: #52675E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #B8D8CA;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* ============================================
+           NAVIGATION BAR
+           ============================================ */
+        .navbar {
+            background-color: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-text-light);
+            padding: 20px var(--spacing-md);
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .navbar-nav a {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav a:hover {
+            color: var(--color-primary-dark);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-secondary);
+        }
+
+        .hero-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 88px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-body);
+            font-size: 20px;
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .product-container {
+            position: relative;
+            background-color: var(--color-bg-tertiary);
+            border-radius: var(--radius-2xl);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .product-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-card);
+        }
+
+        .specs-card {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-text-light);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            box-shadow: var(--shadow-light);
+            width: 211px;
+            animation: slideIn 0.6s ease-out 0.3s both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .specs-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .specs-title {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .specs-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 12px;
+        }
+
+        .specs-item {
+            flex: 1;
+        }
+
+        .specs-value {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-tertiary);
+        }
+
+        .specs-divider {
+            width: 1px;
+            height: 32px;
+            background-color: var(--color-text-light);
+        }
+
+        /* ============================================
+           FEATURES SECTION
+           ============================================ */
+        .features-section {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-primary);
+        }
+
+        .features-container {
+            max-width: 1232px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-family: var(--font-body);
+            font-size: 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .feature-card {
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .feature-card-light {
+            background-color: var(--color-bg-primary);
+            border: 1px solid var(--color-bg-quaternary);
+            color: var(--color-text-primary);
+        }
+
+        .feature-card-dark {
+            background-color: var(--color-primary-brand);
+            color: #FFFFFF;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-card-dark .feature-icon {
+            color: var(--color-primary-light);
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .feature-card-dark h3 {
+            color: #FFFFFF;
+        }
+
+        .feature-card p {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .feature-card-dark p {
+            color: #79A894;
+        }
+
+        /* ============================================
+           CATEGORY SECTION
+           ============================================ */
+        .category-section {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-secondary);
+        }
+
+        .category-container {
+            max-width: 1232px;
+            margin: 0 auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .category-card {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            height: 531px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            group: "category";
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .category-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .category-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.1));
+        }
+
+        .category-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 32px;
+            z-index: 2;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .category-title {
+            font-family: var(--font-heading);
+            font-size: 30px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .category-arrow {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-arrow {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(4px);
+        }
+
+        .category-footer {
+            background-color: var(--color-bg-primary);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            width: fit-content;
+        }
+
+        .category-count {
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        /* ============================================
+           NEWSLETTER SECTION
+           ============================================ */
+        .newsletter-section {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-primary);
+        }
+
+        .newsletter-container {
+            max-width: 1232px;
+            margin: 0 auto;
+        }
+
+        .newsletter-cta {
+            background-color: var(--color-bg-quaternary);
+            border-radius: var(--radius-3xl);
+            padding: 60px 80px;
+            text-align: center;
+        }
+
+        .newsletter-title {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .newsletter-subtitle {
+            font-family: var(--font-body);
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 16px 20px;
+            background-color: var(--color-bg-input);
+            border: 1px solid var(--color-bg-light);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--color-text-primary);
+            transition: all 0.3s ease;
+            height: 56px;
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--color-text-placeholder);
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--color-primary-dark);
+            background-color: var(--color-bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 38, 27, 0.1);
+        }
+
+        .newsletter-submit {
+            padding: 16px 32px;
+            height: 56px;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            background-color: var(--color-bg-tertiary);
+            border-top: 1px solid var(--color-text-light);
+            padding: 40px var(--spacing-md);
+        }
+
+        .footer-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-brand {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            text-decoration: none;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 40px;
+        }
+
+        .footer-nav a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: var(--color-primary-dark);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 1024px) {
+            .hero-container {
+                gap: 32px;
+            }
+
+            .hero-title {
+                font-size: 64px;
+            }
+
+            .features-grid,
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .newsletter-cta {
+                padding: 40px 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px var(--spacing-md);
+            }
+
+            .navbar-nav {
+                gap: 16px;
+                font-size: 14px;
+            }
+
+            .hero {
+                padding: 60px var(--spacing-md);
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .features-grid,
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .category-card {
+                height: 300px;
+            }
+
+            .category-content {
+                padding: 24px;
+            }
+
+            .category-title {
+                font-size: 24px;
+            }
+
+            .newsletter-cta {
+                padding: 40px 24px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                gap: 32px;
+                text-align: center;
+            }
+
+            .footer-nav {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .section-header h2 {
+                font-size: 28px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .category-card {
+                height: 250px;
+            }
+
+            .specs-card {
+                bottom: 16px;
+                left: 16px;
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">Digital Forester</a>
+        <div class="navbar-nav">
+            <a href="#browse">Browse Marketplace</a>
+            <a href="#categories">Categories</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">La Tua Tecnologia, Reimmaginata</h1>
+                <p class="hero-subtitle">
+                    L'ecosistema premium per progettare un futuro sostenibile. Acquista hardware ricondizionato certificato.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">Browse Marketplace</button>
+                    <button class="btn btn-secondary">Vendi il Tuo Dispositivo</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="product-container">
+                    <!-- Placeholder for product image -->
+                    <div style="width: 100%; text-align: center;">
+                        <svg viewBox="0 0 400 300" style="width: 100%; max-width: 350px; filter: drop-shadow(0 25px 50px -12px rgba(0,0,0,0.25));">
+                            <!-- MacBook-like illustration -->
+                            <rect x="40" y="40" width="320" height="200" rx="8" fill="#3A3A3A" />
+                            <rect x="50" y="50" width="300" height="180" rx="4" fill="#1A1A1A" />
+                            <rect x="60" y="60" width="280" height="160" rx="2" fill="#0F0F0F" />
+                            <!-- Screen content suggestion -->
+                            <circle cx="200" cy="140" r="40" fill="#00FFB3" opacity="0.2" />
+                            <text x="200" y="280" text-anchor="middle" font-family="Arial" font-size="20" fill="#00261B" font-weight="bold">MacBook Pro M2</text>
+                        </svg>
+                    </div>
+
+                    <!-- Technical Specs Card -->
+                    <div class="specs-card">
+                        <p class="specs-label">DEVICE ID: DF-2024</p>
+                        <h3 class="specs-title">MacBook Pro M2</h3>
+                        <div class="specs-details">
+                            <div class="specs-item">
+                                <span class="specs-value">16GB RAM</span>
+                            </div>
+                            <div class="specs-divider"></div>
+                            <div class="specs-item">
+                                <span class="specs-value">512GB SSD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Valori Circolari</h2>
+                <p>Progettato per la longevità, ottimizzato per il pianeta.</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature Card 1 -->
+                <div class="feature-card feature-card-light">
+                    <div class="feature-icon">♻️</div>
+                    <h3>Riduci gli Sprechi</h3>
+                    <p>Ogni dispositivo riutilizzato impedisce a fino a 200 kg di rifiuti elettronici di finire nelle discariche globali. Unisciti alla nostra missione net-zero.</p>
+                </div>
+
+                <!-- Feature Card 2 (Dark) -->
+                <div class="feature-card feature-card-dark">
+                    <div class="feature-icon">💰</div>
+                    <h3>Risparmia</h3>
+                    <p>Ottieni prestazioni di alto livello a una frazione del costo. Ingegneria di alta gamma, prezzi accessibili.</p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card feature-card-light">
+                    <div class="feature-icon">✓</div>
+                    <h3>Qualità Garantita</h3>
+                    <p>La nostra ispezione in 52 punti garantisce che ogni componente interno soddisfi gli standard originali del produttore.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Section -->
+    <section class="category-section" id="categories">
+        <div class="category-container">
+            <div class="section-header" style="margin-bottom: 60px;">
+                <h2>Sfoglia per Categoria</h2>
+                <p>Scopri il nostro vasto catalogo di dispositivi ricondizionati</p>
+            </div>
+
+            <div class="category-grid">
+                <!-- Laptops Category -->
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <h3 class="category-title">Portatili</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-footer">
+                            <p class="category-count">156 dispositivi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smartphones Category -->
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);"></div>
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <h3 class="category-title">Smartphone</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-footer">
+                            <p class="category-count">342 dispositivi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PC Components Category -->
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);"></div>
+                    <div class="category-overlay"></div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <h3 class="category-title">Componenti PC</h3>
+                            <div class="category-arrow">→</div>
+                        </div>
+                        <div class="category-footer">
+                            <p class="category-count">89 dispositivi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="newsletter-container">
+            <div class="newsletter-cta">
+                <h2 class="newsletter-title">Resta un passo avanti</h2>
+                <p class="newsletter-subtitle">
+                    Unisciti a oltre 15.000 appassionati di tecnologia sostenibile per ricevere le ultime offerte e consigli.
+                </p>
+                <form class="newsletter-form" onsubmit="handleNewsletterSignup(event)">
+                    <input 
+                        type="email" 
+                        class="newsletter-input" 
+                        placeholder="La tua email aziendale" 
+                        required
+                        aria-label="Email per newsletter"
+                    >
+                    <button type="submit" class="btn btn-primary newsletter-submit">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <a href="#" class="footer-brand">Digital Forester</a>
+            <nav class="footer-nav">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact Us</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        function handleNewsletterSignup(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('.newsletter-input').value;
+            alert(`Grazie per esserti iscritto! Conferma inviata a ${email}`);
+            event.target.reset();
+        }
+
+        // Add smooth scroll behavior to links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .category-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

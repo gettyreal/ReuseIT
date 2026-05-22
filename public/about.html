@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Siamo - ReuseIT | Digital Forester</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+           ============================================ */
+        :root {
+            /* Primary Colors */
+            --color-primary-dark: #00261B;
+            --color-primary-brand: #0B3D2E;
+            --color-primary-light: #BCEDD7;
+            --color-accent-mint: #79A894;
+            --color-accent-light-mint: #BCEDD7;
+
+            /* Neutral Colors */
+            --color-bg-primary: #FFFFFF;
+            --color-bg-secondary: #F9F9F8;
+            --color-bg-tertiary: #F3F4F3;
+            --color-bg-quaternary: #EDEEED;
+            --color-bg-input: #E7E8E7;
+            --color-bg-light: #E1E3E2;
+
+            /* Text Colors */
+            --color-text-primary: #414944;
+            --color-text-secondary: #4E635A;
+            --color-text-tertiary: #52675E;
+            --color-text-placeholder: #6B7280;
+            --color-text-light: #C0C8C3;
+
+            /* Typography */
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
+            /* Spacing */
+            --spacing-xs: 6px;
+            --spacing-sm: 12px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 40px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-2xl: 32px;
+            --radius-3xl: 40px;
+
+            /* Shadows */
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ============================================
+           GLOBAL STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text-primary);
+            background-color: var(--color-bg-secondary);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           BUTTON STYLES
+           ============================================ */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            font-family: var(--font-body);
+            font-size: 18px;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary-dark);
+            color: var(--color-bg-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-brand);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-secondary {
+            background-color: #CEE5DA;
+            color: #52675E;
+        }
+
+        .btn-secondary:hover {
+            background-color: #B8D8CA;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-light {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-light:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           NAVIGATION BAR
+           ============================================ */
+        .navbar {
+            background-color: var(--color-bg-primary);
+            border-bottom: 1px solid var(--color-text-light);
+            padding: 20px var(--spacing-md);
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .navbar-nav a {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav a:hover {
+            color: var(--color-primary-dark);
+        }
+
+        .navbar-nav a.active {
+            color: var(--color-primary-dark);
+            font-weight: 700;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-secondary);
+            min-height: 636px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .manifesto-label {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            line-height: 1.2;
+            margin-bottom: 32px;
+            max-width: 900px;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-body);
+            font-size: 20px;
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        /* ============================================
+           MISSION SECTION
+           ============================================ */
+        .mission-section {
+            padding: 112px var(--spacing-md) 104px;
+            background-color: var(--color-bg-primary);
+        }
+
+        .mission-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+            gap: 56px;
+            align-items: center;
+        }
+
+        .mission-content {
+            max-width: 720px;
+        }
+
+        .mission-content h2 {
+            font-family: var(--font-heading);
+            font-size: 58px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 28px;
+        }
+
+        .mission-description {
+            font-family: var(--font-body);
+            font-size: 18px;
+            color: var(--color-text-primary);
+            line-height: 1.8;
+            max-width: 760px;
+        }
+
+        .mission-description + .mission-description {
+            margin-top: 26px;
+        }
+
+        .mission-highlights {
+            margin-top: 42px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .mission-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 38, 25, 0.06);
+            border-radius: 18px;
+            padding: 24px;
+            min-height: 136px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 18px 40px rgba(0, 38, 25, 0.06);
+        }
+
+        .mission-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(188, 237, 215, 0.92), rgba(121, 168, 148, 0.18));
+            color: var(--color-primary-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mission-card-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .mission-card h3 {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 0;
+        }
+
+        .mission-card p {
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--color-text-secondary);
+            line-height: 1.65;
+        }
+
+        .mission-visual {
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+        }
+
+        .mission-visual-frame {
+            position: relative;
+            width: 100%;
+            min-height: 520px;
+            overflow: hidden;
+            border-radius: 24px;
+            background: linear-gradient(180deg, #0b3529 0%, #07261d 45%, #041815 100%);
+            box-shadow: 0 26px 60px rgba(0, 38, 25, 0.18);
+        }
+
+        .mission-visual-scene {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(0, 38, 25, 0.18) 0%, rgba(0, 38, 25, 0.42) 36%, rgba(0, 38, 25, 0.78) 100%),
+                repeating-linear-gradient(90deg, rgba(58, 146, 110, 0.12) 0 1px, transparent 1px 18px),
+                repeating-linear-gradient(0deg, rgba(58, 146, 110, 0.10) 0 1px, transparent 1px 16px);
+        }
+
+        .mission-visual-scene::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 34px;
+            width: 88%;
+            height: 40%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle at center, rgba(121, 168, 148, 0.24) 0%, rgba(121, 168, 148, 0) 66%);
+            filter: blur(4px);
+        }
+
+        .mission-chip {
+            position: absolute;
+            left: 50%;
+            bottom: 74px;
+            width: min(76%, 430px);
+            height: 112px;
+            transform: translateX(-50%);
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(10, 46, 37, 0.96), rgba(4, 23, 18, 0.98));
+            border: 1px solid rgba(121, 168, 148, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+        }
+
+        .mission-chip::before,
+        .mission-chip::after {
+            content: '';
+            position: absolute;
+            inset: 18px 22px auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(61, 180, 118, 0.55), transparent);
+        }
+
+        .mission-chip::after {
+            inset: auto 22px 18px;
+            top: auto;
+        }
+
+        .mission-growth {
+            position: absolute;
+            inset: 0;
+        }
+
+        .mission-growth span {
+            position: absolute;
+            bottom: 104px;
+            width: 3px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #42d98a 0%, #1d8a57 52%, #0b683f 100%);
+            transform-origin: bottom center;
+            box-shadow: 0 0 18px rgba(60, 204, 131, 0.14);
+        }
+
+        .mission-growth span::before,
+        .mission-growth span::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            width: 18px;
+            height: 10px;
+            border-radius: 80% 20% 80% 20%;
+            background: radial-gradient(circle at 30% 30%, rgba(162, 255, 198, 0.96), rgba(40, 165, 96, 0.88));
+            opacity: 0.94;
+        }
+
+        .mission-growth span::before {
+            left: -15px;
+            transform: rotate(38deg);
+        }
+
+        .mission-growth span::after {
+            right: -15px;
+            transform: rotate(-38deg);
+        }
+
+        .mission-growth span:nth-child(1) { left: 16%; height: 118px; transform: rotate(-7deg); }
+        .mission-growth span:nth-child(2) { left: 20%; height: 156px; transform: rotate(-2deg); }
+        .mission-growth span:nth-child(3) { left: 24%; height: 132px; transform: rotate(4deg); }
+        .mission-growth span:nth-child(4) { left: 28%; height: 168px; transform: rotate(-5deg); }
+        .mission-growth span:nth-child(5) { left: 33%; height: 140px; transform: rotate(2deg); }
+        .mission-growth span:nth-child(6) { left: 38%; height: 180px; transform: rotate(-3deg); }
+        .mission-growth span:nth-child(7) { left: 44%; height: 146px; transform: rotate(5deg); }
+        .mission-growth span:nth-child(8) { left: 50%; height: 176px; transform: rotate(-1deg); }
+        .mission-growth span:nth-child(9) { left: 56%; height: 142px; transform: rotate(4deg); }
+        .mission-growth span:nth-child(10) { left: 62%; height: 166px; transform: rotate(-4deg); }
+        .mission-growth span:nth-child(11) { left: 68%; height: 136px; transform: rotate(3deg); }
+        .mission-growth span:nth-child(12) { left: 73%; height: 118px; transform: rotate(-6deg); }
+
+        .mission-quote {
+            position: absolute;
+            left: -12px;
+            bottom: 24px;
+            width: 232px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: #cfe7db;
+            box-shadow: 0 18px 36px rgba(0, 38, 25, 0.16);
+            z-index: 2;
+        }
+
+        .mission-quote p {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #496057;
+            white-space: pre-line;
+        }
+
+        /* ============================================
+           IMPACT STATISTICS SECTION
+           ============================================ */
+        .impact-section {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-secondary);
+        }
+
+        .impact-container {
+            max-width: 1232px;
+            margin: 0 auto;
+        }
+
+        .impact-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .impact-header h2 {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            grid-template-areas:
+                "large small1 small2 medium";
+        }
+
+        .stat-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-card-large {
+            grid-area: large;
+            background: linear-gradient(135deg, var(--color-accent-mint) 0%, var(--color-accent-light-mint) 100%);
+            grid-row: span 2;
+            min-height: 340px;
+        }
+
+        .stat-card-small {
+            background: linear-gradient(135deg, #A8D5C4 0%, var(--color-accent-light-mint) 100%);
+            min-height: 160px;
+        }
+
+        .stat-card-medium {
+            grid-area: medium;
+            background: linear-gradient(135deg, var(--color-accent-mint) 0%, #A8D5C4 100%);
+            grid-row: span 2;
+            min-height: 340px;
+        }
+
+        .stat-card-large,
+        .stat-card-medium,
+        .stat-card-small {
+            color: #FFFFFF;
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 56px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        .stat-card-large .stat-number {
+            font-size: 72px;
+        }
+
+        .stat-label {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 12px;
+        }
+
+        .stat-description {
+            font-family: var(--font-body);
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* ============================================
+           HOW IT WORKS SECTION
+           ============================================ */
+        .process-section {
+            padding: 80px var(--spacing-md);
+            background-color: var(--color-bg-primary);
+        }
+
+        .process-container {
+            max-width: 1232px;
+            margin: 0 auto;
+        }
+
+        .process-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .process-header h2 {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .process-header p {
+            font-family: var(--font-body);
+            font-size: 18px;
+            color: var(--color-text-secondary);
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            position: relative;
+        }
+
+        .process-step {
+            text-align: center;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-number {
+            font-family: var(--font-heading);
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 20px;
+            opacity: 0.2;
+        }
+
+        .step-title {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 16px;
+        }
+
+        .step-description {
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            line-height: 1.8;
+        }
+
+        .process-connector {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-accent-light-mint), transparent);
+            z-index: -1;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            padding: 80px var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-primary-brand) 0%, var(--color-primary-dark) 100%);
+        }
+
+        .cta-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-heading {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 24px;
+        }
+
+        .cta-quote {
+            font-family: var(--font-body);
+            font-size: 24px;
+            color: var(--color-accent-light-mint);
+            font-style: italic;
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            background-color: var(--color-bg-tertiary);
+            border-top: 1px solid var(--color-text-light);
+            padding: 40px var(--spacing-md);
+        }
+
+        .footer-container {
+            max-width: 1232px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-nav a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: var(--color-primary-dark);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--color-text-light);
+            padding-top: 24px;
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .mission-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .mission-content {
+                max-width: 100%;
+            }
+
+            .mission-visual,
+            .mission-visual-frame {
+                min-height: 480px;
+            }
+
+            .impact-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-areas:
+                    "large small1"
+                    "medium small2";
+            }
+
+            .process-steps {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .process-connector {
+                display: none;
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px var(--spacing-md);
+            }
+
+            .navbar-nav {
+                gap: 16px;
+                font-size: 14px;
+            }
+
+            .hero {
+                padding: 60px var(--spacing-md);
+                min-height: auto;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .mission-content h2 {
+                font-size: 40px;
+            }
+
+            .mission-description {
+                font-size: 16px;
+            }
+
+            .mission-highlights {
+                grid-template-columns: 1fr;
+            }
+
+            .process-header h2,
+            .impact-header h2,
+            .cta-heading {
+                font-size: 28px;
+            }
+
+            .impact-grid {
+                grid-template-columns: 1fr;
+                grid-template-areas: unset;
+            }
+
+            .stat-card-large,
+            .stat-card-medium {
+                grid-row: auto;
+                min-height: 200px;
+            }
+
+            .stat-number {
+                font-size: 48px;
+            }
+
+            .stat-card-large .stat-number {
+                font-size: 48px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .mission-visual,
+            .mission-visual-frame {
+                min-height: 420px;
+            }
+
+            .mission-quote {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                width: auto;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .mission-content h2 {
+                font-size: 24px;
+            }
+
+            .mission-section {
+                padding-top: 80px;
+                padding-bottom: 80px;
+            }
+
+            .process-header h2,
+            .impact-header h2,
+            .cta-heading {
+                font-size: 24px;
+            }
+
+            .cta-quote {
+                font-size: 18px;
+            }
+
+            .step-number {
+                font-size: 48px;
+            }
+
+            .mission-visual,
+            .mission-visual-frame {
+                min-height: 360px;
+            }
+
+            .mission-card {
+                padding: 20px;
+            }
+
+            .mission-quote {
+                padding: 18px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="landing.html" class="navbar-brand">Digital Forester</a>
+        <div class="navbar-nav">
+            <a href="landing.html">Home</a>
+            <a href="#" class="active">Chi Siamo</a>
+            <a href="#marketplace">Marketplace</a>
+            <a href="#contact">Contatti</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="manifesto-label">Manifesto 01.0</div>
+            <h1 class="hero-title" style="color: #00261B; font-size: 76px;">Ingegnerizzare un' <span style="color: #79A894;">economia circolare</span> per l'era digitale.</h1>
+            <p class="hero-subtitle">
+                Crediamo che la tecnologia ad alte prestazioni non debba costare il pianeta. Digital Forester è il ponte tra l'ingegneria di precisione e la tutela dell'ambiente.
+            </p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section">
+        <div class="mission-container">
+            <div class="mission-content">
+                <h2>La Nostra Missione</h2>
+                <p class="mission-description">
+                    Ogni anno vengono scartati milioni di tonnellate di elettronica, eppure la maggior parte mantiene il 90% della sua utilità. La nostra missione è intercettare questo flusso di rifiuti, ricondizionando e ricollocando dispositivi premium con la cura di un artigiano digitale.
+                </p>
+
+                <div class="mission-highlights">
+                    <div class="mission-card">
+                        <span class="mission-card-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
+                                <path d="M19 5c-4 0-7 1.5-9 4s-3 6-3 10c4 0 8-1 10.5-3.5S21 10 21 6c0-.6-.4-1-1-1h-1Z" />
+                                <path d="M8 16c1.7-1.7 4.3-3.3 7.8-4.8" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>Carbon Neutral</h3>
+                            <p>Ogni transazione è compensata tramite riforestazione certificata.</p>
+                        </div>
+                    </div>
+
+                    <div class="mission-card">
+                        <span class="mission-card-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
+                                <rect x="6" y="6" width="12" height="12" rx="2" />
+                                <path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3" />
+                                <path d="M10 10h4v4h-4z" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>Integrità Tecnica</h3>
+                            <p>Rigorosi piani tecnici in 50 punti per ogni dispositivo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mission-visual">
+                <div class="mission-visual-frame">
+                    <div class="mission-visual-scene" aria-hidden="true"></div>
+                    <div class="mission-chip" aria-hidden="true"></div>
+                    <div class="mission-growth" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="mission-quote">
+                    <p>"La tecnologia è una risorsa, non un bene usa<br>e getta."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Statistics Section -->
+    <section class="impact-section">
+        <div class="impact-container">
+            <div class="impact-header">
+                <h2>Il Nostro Impatto</h2>
+            </div>
+
+            <div class="impact-grid">
+                <!-- Large Card -->
+                <div class="stat-card stat-card-large">
+                    <div class="stat-number">142k</div>
+                    <div class="stat-label">Rifiuti Cumulativi Risparmiati</div>
+                    <div class="stat-description">Chilogrammi di rifiuti elettronici sottratti alle discariche globali.</div>
+                </div>
+
+                <!-- Small Card 1 -->
+                <div class="stat-card stat-card-small">
+                    <div class="stat-number">12.4k+</div>
+                    <div class="stat-label">Alberi Piantati</div>
+                    <div class="stat-description">Ripristino della biodiversità in biomi forestali critici.</div>
+                </div>
+
+                <!-- Small Card 2 -->
+                <div class="stat-card stat-card-small">
+                    <div class="stat-number">3.8M</div>
+                    <div class="stat-label">CO2 Compensata</div>
+                    <div class="stat-description">Tonnellate di emissioni di carbonio evitate attraverso il riutilizzo.</div>
+                </div>
+
+                <!-- Medium Card -->
+                <div class="stat-card stat-card-medium">
+                    <div class="stat-number">+9</div>
+                    <div class="stat-label">Paesi Raggiunti</div>
+                    <div class="stat-description">Conservazione Regionale - Espandiamo la nostra impronta in 12 paesi attraverso partnership locali.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="process-section">
+        <div class="process-container">
+            <div class="process-header">
+                <h2>Il Ciclo della Sostenibilità</h2>
+                <p>Semplice, trasparente e tecnicamente impeccabile.</p>
+            </div>
+
+            <div class="process-steps">
+                <div class="process-connector"></div>
+
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <h3 class="step-title">Vendi</h3>
+                    <p class="step-description">Inviaci il tuo hardware datato. Forniamo valutazioni immediate e distruzione sicura dei dati come protocollo standard.</p>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <h3 class="step-title">Ricondiziona</h3>
+                    <p class="step-description">I nostri tecnici eseguono aggiornamenti chirurgici, sostituendo batterie e componenti termici per superare le specifiche originali.</p>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <h3 class="step-title">Acquista</h3>
+                    <p class="step-description">Ottieni dispositivi ad alte prestazioni a una frazione del costo — monetario e ambientale. Pronti per una seconda vita.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2 class="cta-heading">Pronto a unirti alla foresta?</h2>
+            <p class="cta-quote">"La tecnologia è una risorsa, non un bene usa e getta."</p>
+            <div class="cta-buttons">
+                <a href="#marketplace" class="btn btn-light">Sfoglia il Marketplace</a>
+                <a href="#recycle" class="btn btn-light">Ricicla un Dispositivo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Digital Forester</h3>
+                <p style="font-size: 14px; color: var(--color-text-secondary); line-height: 1.6;">
+                    © 2024 Digital Forester. Ingegnerizzare un Futuro Sostenibile.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Navigazione</h3>
+                <nav class="footer-nav">
+                    <a href="#marketplace">Marketplace</a>
+                    <a href="#about" class="active">Chi Siamo</a>
+                    <a href="#sell">Vendi</a>
+                    <a href="#recycle">Ricicla</a>
+                </nav>
+            </div>
+
+            <div class="footer-section">
+                <h3>Risorse</h3>
+                <nav class="footer-nav">
+                    <a href="#sustainability">Rapporto di Sostenibilità</a>
+                    <a href="#terms">Termini di Servizio</a>
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#support">Supporto Clienti</a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>Realizzato con passione per il pianeta 🌱</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll to sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe stats cards for animation
+        document.querySelectorAll('.stat-card').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+
+        // Observe process steps
+        document.querySelectorAll('.process-step').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+
+        // Update active nav link on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = 'var(--shadow-light)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
